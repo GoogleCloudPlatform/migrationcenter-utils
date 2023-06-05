@@ -1,0 +1,20 @@
+{
+  "asset_table": [
+    {
+      "name": "Foo",
+      "type": "INTEGER"
+    }
+  ],
+  "group_table": [
+    {
+      "name": "Foo",
+      "type": "STRING"
+    }
+  ],
+  "preference_set_table": [
+    {
+      "name": "Foo",
+      "type": "BOOLEAN"
+    }
+  ]
+}

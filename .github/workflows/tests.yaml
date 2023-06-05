@@ -1,0 +1,63 @@
+# Copyright 2023 Google LLC All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+on: [push, pull_request]
+name: tests
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.19.x]
+        platform: [ubuntu-latest]
+        include:
+          # only update test coverage stats with the most recent go version on linux
+          - go-version: 1.x
+            platform: ubuntu-latest
+            update-coverage: true
+    runs-on: ${{ matrix.platform }}
+
+    permissions:
+      # styfle/cancel-workflow-action needs to be able to cancel existing action workflows
+      actions: write
+
+    steps:
+    - name: Cancel previous
+      uses: styfle/cancel-workflow-action@89f242ee29e10c53a841bfe71cc0ce7b2f065abc #0.9.0
+      continue-on-error: true # canceling previous runs is an optimization, can be skipped
+      with:
+        access_token: ${{ github.token }}
+
+    - uses: actions/setup-go@v3
+      with:
+        go-version: ${{ matrix.go-version }}
+    - uses: actions/checkout@v3
+
+    - name: Cache go modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: ${{ runner.os }}-go-
+
+    - name: Run go test
+      run: cd tools/mc2bq && go test -v -race -coverprofile coverage.txt -covermode atomic ./...
+      env:
+        SKIP_E2E: "TRUE"
+
+    - name: Upload coverage to Codecov
+      if: ${{ matrix.update-coverage }}
+      uses: codecov/codecov-action@v3
