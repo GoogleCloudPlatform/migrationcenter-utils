@@ -34,6 +34,7 @@ jobs:
     - name: Release Artifacts
       run: |
         set -x
+        git fetch --tags
         cd tools/mc2bq && ./aux/release-artifacts.sh
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
