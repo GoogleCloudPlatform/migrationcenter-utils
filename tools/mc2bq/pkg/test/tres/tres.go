@@ -26,7 +26,6 @@ import (
 	"cloud.google.com/go/bigquery"
 	migrationcenter "cloud.google.com/go/migrationcenter/apiv1"
 	"cloud.google.com/go/migrationcenter/apiv1/migrationcenterpb"
-	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/backoff"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/gapiutil"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/mcutil"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/test/shortid"
@@ -34,13 +33,6 @@ import (
 )
 
 const defaultRegion = "us-central1"
-
-var pollBackoff = backoff.Backoff{
-	Duration: 5 * time.Second,
-	Factor:   1.0, // We want to backoff at a constant rate
-	Jitter:   0.2,
-	Cap:      5 * time.Second,
-}
 
 func ObtainProject(t testing.TB) string {
 	projectID := os.Getenv("PROJECT")

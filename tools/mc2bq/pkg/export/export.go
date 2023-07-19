@@ -31,7 +31,6 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
-	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/backoff"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/gapiutil"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/mcutil"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/messages"
@@ -182,53 +181,6 @@ func Export(params *Params) error {
 	})
 
 	return nil
-}
-
-type objectIterator[T any] struct {
-	listRequest   func(nextPageToken string) ([]*T, string, error)
-	objects       []*T
-	nextPageToken string
-	isInitialized bool
-}
-
-func (it *objectIterator[T]) Next() (*T, error) {
-	ctx := context.Background()
-	if len(it.objects) == 0 {
-		if it.nextPageToken == "" && it.isInitialized {
-			return nil, iterator.Done
-		}
-		it.isInitialized = true
-
-		var nextPageToken string
-		var objs []*T
-		err := backoff.RetryUntil(ctx, gapiutil.DefaultBackoff, func() (bool, error) {
-			var err error
-			objs, nextPageToken, err = it.listRequest(it.nextPageToken)
-			// if there was no error, break
-			if err == nil {
-				return true, nil
-			}
-			if gapiutil.IsTransientError(err) {
-				return false, nil
-			}
-
-			return true, err
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if len(objs) == 0 {
-			return nil, iterator.Done
-		}
-
-		it.objects = objs
-		it.nextPageToken = nextPageToken
-	}
-
-	obj := it.objects[0]
-	it.objects = it.objects[1:] // pop
-	return obj, nil
 }
 
 type iterable[T any] interface {
