@@ -8,7 +8,6 @@ else
 fi
 
 VERSION_VAR=github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/messages.Version
-
 TARGETS=(
   windows,amd64,.exe,zip
   windows,arm,.exe,zip
