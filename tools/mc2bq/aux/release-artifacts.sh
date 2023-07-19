@@ -14,6 +14,6 @@ find . -name "mc2bq_${tag_name}_*.tar.gz" -or -name "mc2bq_${tag_name}_*.zip" | 
     echo "Dev version not releasing"
     echo ${artifact}
   else
-    hub release create "${artifact}" "${tag_name}"
+    hub release create "${artifact}" "${tag_name}" -m "${tag_name}"
   fi
 done
