@@ -10,14 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.19'
-
-    - name: Build
-      run: cd tools/mc2bq && ./aux/build-all.sh
-
     - name: Create Release
       id: create_release
       uses: actions/create-release@latest
@@ -30,12 +22,3 @@ jobs:
           ${{ steps.Changelog.outputs.changelog }}
         draft: false
         prerelease: false
-
-    - name: Release Artifacts
-      run: |
-        set -x
-        git fetch --tags
-        cd tools/mc2bq && ./aux/release-artifacts.sh
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
