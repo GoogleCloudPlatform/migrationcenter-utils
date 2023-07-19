@@ -22,11 +22,11 @@ import (
 )
 
 // Version is the current version of the tool
-const Version = "0.9"
+var Version = "dev"
 
 // UserAgent represents the user agent strings that will be used to identify
 // the tool while accessing the varius GCP services
-const UserAgent = "mc2bq/" + Version
+var UserAgent = "mc2bq/" + Version
 
 // Message is an interface for all user facing messages
 type Message interface {

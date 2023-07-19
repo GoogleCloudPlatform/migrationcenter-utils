@@ -4,8 +4,10 @@ set -e
 if [ -n "${GITHUB_REF}" ]; then
   tag_name="${GITHUB_REF##*/}"
 else
-  tag_name=dev
+  tag_name=v$(date '+%y%m%d')-dev
 fi
+
+VERSION_VAR=github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/messages.Version
 
 TARGETS=(
   windows,amd64,.exe,zip
@@ -18,12 +20,13 @@ TARGETS=(
 )
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-env
 
 for target in "${TARGETS[@]}"; do
   IFS=, read os arch suffix package <<<$target
   dir=dist/${os}_${arch}
-  GOOS=$os GOARCH=$arch go build -o "$dir/mc2bq${suffix}"
+  GOOS=$os GOARCH=$arch go build \
+    -ldflags="-X '${VERSION_VAR}=${tag_name}'" \
+    -o "$dir/mc2bq${suffix}"
   pushd $dir
   case "${package}" in
     zip)
@@ -38,6 +41,5 @@ for target in "${TARGETS[@]}"; do
     exit 1
     ;;
   esac
-  hub release create "${fname}" -m "$tag_name" "$tag_name"
   popd
 done
