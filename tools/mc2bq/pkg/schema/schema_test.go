@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/migrationcenter/apiv1/migrationcenterpb"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -55,6 +56,7 @@ func TestObjectSerializer(t *testing.T) {
 		RecordArray     []*TestInnerStruct
 		RecordMap       map[string]*TestInnerStruct
 		DeprecatedField string
+		Enum            migrationcenterpb.CommitmentPlan
 	}
 	schema := bigquery.Schema{
 		{Name: "int_scalar", Type: bigquery.IntegerFieldType},
@@ -76,6 +78,7 @@ func TestObjectSerializer(t *testing.T) {
 			{Name: "key", Type: bigquery.StringFieldType},
 			{Name: "value", Type: bigquery.RecordFieldType, Schema: innerStructSchema},
 		}},
+		{Name: "enum", Type: bigquery.StringFieldType},
 		// DeprecatedField doesn't appear in the schema as it has been deprecated
 	}
 	// This ensures that we are testing all the field types that exist in the schema
@@ -97,6 +100,7 @@ func TestObjectSerializer(t *testing.T) {
 		RecordArray:     []*TestInnerStruct{{FieldA: "1", FieldB: 1}, {FieldA: "2", FieldB: 2}},
 		RecordMap:       map[string]*TestInnerStruct{"key": {FieldA: "value"}},
 		DeprecatedField: "I should not be in the result JSON",
+		Enum:            1,
 	}
 
 	got, err := SerializeObjectToBigQuery(obj, "object", schema)

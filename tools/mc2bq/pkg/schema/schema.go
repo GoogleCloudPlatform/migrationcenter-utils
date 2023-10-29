@@ -28,6 +28,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/messages"
@@ -230,6 +232,8 @@ func normalizeToSchema(obj any, schema *bigquery.FieldSchema) (any, error) {
 		switch obj := objValue.Interface().(type) {
 		case string:
 			return obj, nil
+		case protoreflect.Enum:
+			return protoimpl.X.EnumStringOf(obj.Descriptor(), protoreflect.EnumNumber(obj.Number())), nil
 		default:
 			return nil, wrapWithSerializeError(schema.Name, fmt.Errorf("convert field of type %q to string", reflect.TypeOf(obj).String()))
 		}
