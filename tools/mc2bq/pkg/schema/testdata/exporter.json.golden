@@ -10,6 +10,7 @@
       "value": "bar"
     }
   ],
+  "enum": "COMMITMENT_PLAN_NONE",
   "float32_scalar": 0.32,
   "float64_scalar": 0.64,
   "int_array": [
