@@ -36,7 +36,7 @@ func (mc *MCv1) AssetSource(ctx context.Context, pal mcutil.ProjectAndLocation) 
 		Parent:   pal.String(),
 		PageSize: 1000,
 	})
-	r := newObjectReader[migrationcenterpb.Asset](it, "asset", mc.schema.AssetTable)
+	r := newObjectReader[*migrationcenterpb.Asset](it, "asset", mc.schema.AssetTable)
 	src := newMigrationCenterLoadSource(r)
 	return &struct {
 		bigquery.LoadSource
@@ -49,7 +49,7 @@ func (mc *MCv1) GroupSource(ctx context.Context, pal mcutil.ProjectAndLocation) 
 		Parent:   pal.String(),
 		PageSize: 1000,
 	})
-	r := newObjectReader[migrationcenterpb.Group](it, "asset", mc.schema.GroupTable)
+	r := newObjectReader[*migrationcenterpb.Group](it, "group", mc.schema.GroupTable)
 	src := newMigrationCenterLoadSource(r)
 	return &struct {
 		bigquery.LoadSource
@@ -62,7 +62,7 @@ func (mc *MCv1) PreferenceSetSource(ctx context.Context, pal mcutil.ProjectAndLo
 		Parent:   pal.String(),
 		PageSize: 1000,
 	})
-	r := newObjectReader[migrationcenterpb.PreferenceSet](it, "asset", mc.schema.PreferenceSetTable)
+	r := newObjectReader[*migrationcenterpb.PreferenceSet](it, "preference_set", mc.schema.PreferenceSetTable)
 	src := newMigrationCenterLoadSource(r)
 	return &struct {
 		bigquery.LoadSource

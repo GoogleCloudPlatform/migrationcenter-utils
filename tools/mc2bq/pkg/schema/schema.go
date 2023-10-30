@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -116,9 +115,9 @@ func init() {
 // NewSerializer creates a type safe serializer for type T.
 // It's the callers responsibility to make sure that the schema and type T match.
 // root describes the root node string that will appear in errors.
-func NewSerializer[T any](root string, schema bigquery.Schema) func(obj T) ([]byte, error) {
+func NewSerializer[T protoreflect.ProtoMessage](root string, schema bigquery.Schema) func(obj T) ([]byte, error) {
 	return func(obj T) ([]byte, error) {
-		return SerializeObjectToBigQuery(obj, root, schema)
+		return SerializeObjectToBigQuery(obj.ProtoReflect(), root, schema)
 	}
 }
 
@@ -127,7 +126,7 @@ func NewSerializer[T any](root string, schema bigquery.Schema) func(obj T) ([]by
 // The function should never return an error in production, if it fails it's a bug
 // resulting from a mismatch between the API object and the BigQuery schema and both are generated
 // from the same protobuf.
-func SerializeObjectToBigQuery(obj any, root string, schema bigquery.Schema) ([]byte, error) {
+func SerializeObjectToBigQuery(obj protoreflect.Message, root string, schema bigquery.Schema) ([]byte, error) {
 	serializedObj, err := normalizeToSchema(
 		obj,
 		&bigquery.FieldSchema{
@@ -148,157 +147,177 @@ func SerializeObjectToBigQuery(obj any, root string, schema bigquery.Schema) ([]
 	return append(res, '\n'), err
 }
 
-// normalizeToSchema normalizes obj to according to the provided schema.
-// Specifically converts structs to maps, and maps to key-value lists.
-func normalizeToSchema(obj any, schema *bigquery.FieldSchema) (any, error) {
-	// short circuit for nil values
-	if obj == nil {
-		return nil, nil
+func fieldConversionError(kind protoreflect.Kind, bqtype bigquery.FieldType) error {
+	return fmt.Errorf("convert proto kind %q to bigquery type %q", kind.String(), bqtype)
+}
+
+func convertProtoValueToBQType(value protoreflect.Value, fd protoreflect.FieldDescriptor, schema *bigquery.FieldSchema) (any, error) {
+	bqtype := schema.Type
+	kind := fd.Kind()
+	switch kind {
+	case protoreflect.BoolKind:
+		switch bqtype {
+		case bigquery.BooleanFieldType:
+			return value.Bool(), nil
+		}
+	case protoreflect.Int32Kind,
+		protoreflect.Sint32Kind,
+		protoreflect.Sfixed32Kind,
+		protoreflect.Int64Kind,
+		protoreflect.Sint64Kind,
+		protoreflect.Sfixed64Kind:
+		switch bqtype {
+		case bigquery.IntegerFieldType:
+			return value.Int(), nil
+		}
+	case protoreflect.Uint32Kind,
+		protoreflect.Fixed32Kind,
+		protoreflect.Uint64Kind,
+		protoreflect.Fixed64Kind:
+		switch bqtype {
+		case bigquery.IntegerFieldType:
+			return value.Uint(), nil
+		}
+	case protoreflect.StringKind:
+		switch bqtype {
+		case bigquery.StringFieldType:
+			return value.String(), nil
+		}
+	case protoreflect.FloatKind,
+		protoreflect.DoubleKind:
+		return value.Float(), nil
+	case protoreflect.MessageKind:
+		return normalizeToSchema(value.Message(), schema)
+	case protoreflect.EnumKind:
+		switch bqtype {
+		case bigquery.StringFieldType:
+			return protoimpl.X.EnumStringOf(fd.Enum(), value.Enum()), nil
+		}
+	}
+	return nil, fieldConversionError(kind, bqtype)
+}
+
+func normalizeMessageField(obj protoreflect.Message, col *bigquery.FieldSchema) (any, error) {
+	fieldDesc := obj.Descriptor().Fields().ByName(protoreflect.Name(col.Name))
+	if fieldDesc == nil {
+		return nil, fmt.Errorf("field %q not found", col.Name)
+	}
+	value := obj.Get(fieldDesc)
+
+	if fieldDesc.Cardinality() != protoreflect.Repeated {
+		res, err := convertProtoValueToBQType(value, fieldDesc, col)
+		if err != nil {
+			return nil, wrapWithSerializeError(col.Name, err)
+		}
+
+		return res, nil
 	}
 
-	objValue := reflect.ValueOf(obj)
-	if objValue.Type().Kind() == reflect.Ptr {
-		if objValue.IsNil() {
+	if fieldDesc.IsList() {
+		lst := value.List()
+		if lst.Len() == 0 {
 			return nil, nil
 		}
 
-		objValue = objValue.Elem()
-	}
-	objType := objValue.Type()
-	if schema.Repeated {
-		switch objType.Kind() {
-		case reflect.Slice:
-			// This is an array, we need to just normalize each item in the array.
-			itemSchema := *schema
-			itemSchema.Repeated = false // we are serializing the item so it's not repeated
-			result := make([]any, objValue.Len())
-			for i := 0; i < objValue.Len(); i++ {
-				var err error
-				result[i], err = normalizeToSchema(objValue.Index(i).Interface(), &itemSchema)
-				if err != nil {
-					return nil, wrapWithSerializeError(fmt.Sprintf("%s[%d]", schema.Name, i), err)
-				}
-			}
-			return result, nil
-		case reflect.Map:
-			// This is a dynamic map, those are not supported by BigQuery so we need to convert it to an
-			// array in the form of [struct{key: string, value: T}, ...]
-			if len(schema.Schema) != 2 {
-				return nil, wrapWithSerializeError(schema.Name, errors.New("schema for dynamic map is invalid"))
-			}
-
-			if schema.Schema[1].Name != "value" {
-				return nil, wrapWithSerializeError(schema.Name, errors.New("schema for dynamic map is invalid"))
-			}
-			keySchema := schema.Schema[1]
-
-			result := []map[string]any{}
-			iter := objValue.MapRange()
-			for iter.Next() {
-				var err error
-				item := map[string]any{}
-				key := iter.Key()
-				value := iter.Value()
-
-				item["key"] = key.String()
-				item["value"], err = normalizeToSchema(value.Interface(), keySchema)
-				if err != nil {
-					return nil, wrapWithSerializeError(fmt.Sprintf("%s[%q]", schema.Name, key), err)
-				}
-
-				result = append(result, item)
-			}
-
-			// Sort by key to make the output list stable, otherwise each export
-			// might reorder the items making diffing harder
-			sort.SliceStable(result, func(i, j int) bool {
-				return strings.Compare(result[i]["key"].(string), result[j]["key"].(string)) < 0
-			})
-			return result, nil
-		default:
-			return nil, wrapWithSerializeError(schema.Name, fmt.Errorf("schema does not match object: %d", objType.Kind()))
-		}
-	}
-
-	switch schema.Type {
-	case bigquery.TimestampFieldType:
-		switch obj := objValue.Interface().(type) {
-		case timestamppb.Timestamp:
-			return time.Unix(obj.Seconds, int64(obj.Nanos)).Format(time.RFC3339), nil
-		default:
-			return nil, wrapWithSerializeError(schema.Name, fmt.Errorf("convert field of type %q to timestamp", reflect.TypeOf(obj).String()))
-		}
-	case bigquery.StringFieldType:
-		switch obj := objValue.Interface().(type) {
-		case string:
-			return obj, nil
-		case protoreflect.Enum:
-			return protoimpl.X.EnumStringOf(obj.Descriptor(), protoreflect.EnumNumber(obj.Number())), nil
-		default:
-			return nil, wrapWithSerializeError(schema.Name, fmt.Errorf("convert field of type %q to string", reflect.TypeOf(obj).String()))
-		}
-	case bigquery.IntegerFieldType:
-		switch obj := objValue.Interface().(type) {
-		case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
-			return obj, nil
-		default:
-			return nil, wrapWithSerializeError(schema.Name, fmt.Errorf("convert field of type %q to integer", reflect.TypeOf(obj).String()))
-		}
-	case bigquery.FloatFieldType:
-		switch obj := objValue.Interface().(type) {
-		case float32, float64:
-			return obj, nil
-		default:
-			return nil, wrapWithSerializeError(schema.Name, fmt.Errorf("convert field of type %q to float", reflect.TypeOf(obj).String()))
-		}
-	case bigquery.BooleanFieldType:
-		switch obj := objValue.Interface().(type) {
-		case bool:
-			return obj, nil
-		default:
-			return nil, wrapWithSerializeError(schema.Name, fmt.Errorf("convert field of type %q to bool", reflect.TypeOf(obj).String()))
-		}
-	case bigquery.RecordFieldType:
-		// This is a static map
-		result := map[string]any{}
-		for _, col := range schema.Schema {
+		tmpList := make([]any, lst.Len())
+		itemSchema := *col
+		itemSchema.Repeated = false // we are serializing the item so it's not repeated
+		for i := 0; i < len(tmpList); i++ {
 			var err error
-			// The protobuf and table fields are in snake case but the struct fields are in camel case
-			fieldName := snakeCaseToCamelCase(col.Name)
-			value := objValue.FieldByName(fieldName)
-			if !value.IsValid() {
-				// The schema might be newer than the exporter, just ignore
-				continue
-			}
-			result[col.Name], err = normalizeToSchema(value.Interface(), col)
+			item := lst.Get(i)
+			tmpList[i], err = convertProtoValueToBQType(item, fieldDesc, &itemSchema)
 			if err != nil {
-				return nil, wrapWithSerializeError(schema.Name, err)
+				return nil, wrapWithSerializeError(fmt.Sprintf("%s[%d]", col.Name, i), err)
 			}
 		}
-		return result, nil
-	default:
-		return nil, wrapWithSerializeError(schema.Name, fmt.Errorf("unsupported bigquery field type %q", schema.Type))
+
+		return tmpList, nil
 	}
+
+	if fieldDesc.IsMap() {
+		// Create a dynamic map. Because maps are not supported by BigQuery.
+		// We need to convert it to an array in the form of [struct{key: string, value: T}, ...]
+
+		if len(col.Schema) != 2 {
+			return nil, wrapWithSerializeError(col.Name, errors.New("schema for dynamic map is invalid"))
+		}
+
+		if col.Schema[1].Name != "value" {
+			return nil, wrapWithSerializeError(col.Name, errors.New("schema for dynamic map is invalid"))
+		}
+
+		if fieldDesc.MapKey().Kind() != protoreflect.StringKind {
+			return nil, wrapWithSerializeError(col.Name, errors.New("schema for dynamic map is invalid"))
+		}
+
+		dict := value.Map()
+		keySchema := col.Schema[1]
+		result := []map[string]any{}
+
+		var err error
+		dict.Range(func(mk protoreflect.MapKey, v protoreflect.Value) bool {
+			item := map[string]any{}
+			key := mk.String()
+			item["key"] = key
+			item["value"], err = convertProtoValueToBQType(v, fieldDesc.MapValue(), keySchema)
+			if err != nil {
+				err = wrapWithSerializeError(fmt.Sprintf("%s[%q]", col.Name, key), err)
+				return false
+			}
+
+			result = append(result, item)
+			return true
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		// Sort by key to make the output list stable, otherwise each export
+		// might reorder the items making diffing harder
+		sort.SliceStable(result, func(i, j int) bool {
+			return strings.Compare(result[i]["key"].(string), result[j]["key"].(string)) < 0
+		})
+
+		if len(result) == 0 {
+			return nil, nil
+		}
+
+		return result, nil
+	}
+
+	// Fields are either scalars, lists or maps
+	panic("unreachable code")
 }
 
-var snakeCaseWordStartRE = regexp.MustCompile(`_[\w]`)
-
-// We keep converting the same strings in a tight loop so
-// we memoize the results
-var snakeCaseToCamelCaseMemoize = map[string]string{}
-
-func snakeCaseToCamelCase(name string) string {
-	result, ok := snakeCaseToCamelCaseMemoize[name]
-	if !ok {
-		result = strings.ToUpper(name[:1]) + snakeCaseWordStartRE.ReplaceAllStringFunc(
-			name[1:],
-			func(s string) string {
-				return strings.ToUpper(s[1:])
-			})
-		snakeCaseToCamelCaseMemoize[name] = result
+// normalizeToSchema normalizes obj to according to the provided schema.
+// Specifically converts structs to maps, and maps to key-value lists.
+func normalizeToSchema(obj protoreflect.Message, schema *bigquery.FieldSchema) (any, error) {
+	// short circuit for nil values
+	if !obj.IsValid() {
+		return nil, nil
 	}
 
-	return result
+	if obj, ok := obj.Interface().(*timestamppb.Timestamp); ok {
+		return time.Unix(obj.Seconds, int64(obj.Nanos)).Format(time.RFC3339), nil
+	}
+
+	result := map[string]any{}
+
+	for _, col := range schema.Schema {
+		res, err := normalizeMessageField(obj, col)
+		if err != nil {
+			return nil, err
+		}
+
+		if res == nil {
+			continue
+		}
+
+		result[col.Name] = res
+	}
+
+	return result, nil
 }
 
 type serializeError struct {

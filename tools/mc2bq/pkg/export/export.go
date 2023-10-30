@@ -30,6 +30,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/gapiutil"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mc2bq/pkg/mcutil"
@@ -187,7 +188,7 @@ type iterable[T any] interface {
 	Next() (T, error)
 }
 
-type objectReader[T any] struct {
+type objectReader[T protoreflect.ProtoMessage] struct {
 	schema     bigquery.Schema
 	it         iterable[T]
 	serializer func(obj T) ([]byte, error)
@@ -197,9 +198,9 @@ type objectReader[T any] struct {
 	bytesRead   uint64
 }
 
-func newObjectReader[T any](it iterable[*T], root string, schema bigquery.Schema) *objectReader[*T] {
-	return &objectReader[*T]{
-		serializer: exporterschema.NewSerializer[*T](root, schema),
+func newObjectReader[T protoreflect.ProtoMessage](it iterable[T], root string, schema bigquery.Schema) *objectReader[T] {
+	return &objectReader[T]{
+		serializer: exporterschema.NewSerializer[T](root, schema),
 		it:         it,
 		schema:     schema,
 	}
@@ -247,7 +248,7 @@ func (r *objectReader[T]) Read(buf []byte) (int, error) {
 	return n, nil
 }
 
-func newMigrationCenterLoadSource[T any](r *objectReader[T]) bigquery.LoadSource {
+func newMigrationCenterLoadSource[T protoreflect.ProtoMessage](r *objectReader[T]) bigquery.LoadSource {
 	// Creating a full blown bigquery.LoadSource requires a lot of low level big query operations.
 	// To save on time we create a ReaderSource and feed it the assets as a json stream.
 	src := bigquery.NewReaderSource(r)
