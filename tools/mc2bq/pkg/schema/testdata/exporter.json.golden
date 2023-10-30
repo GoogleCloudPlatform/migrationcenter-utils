@@ -1,52 +1,32 @@
 {
-  "bool_scalar": false,
-  "dynamic_map": [
-    {
-      "key": "fizz",
-      "value": "buzz"
-    },
-    {
-      "key": "foo",
-      "value": "bar"
-    }
-  ],
-  "enum": "COMMITMENT_PLAN_NONE",
-  "float32_scalar": 0.32,
-  "float64_scalar": 0.64,
-  "int_array": [
-    1,
-    2,
-    3
-  ],
-  "int_scalar": 3,
-  "record": {
-    "field_a": "test",
-    "field_b": 10
+  "create_time": "1970-01-01T00:00:10Z",
+  "insight_list": {
+    "insights": [
+      {
+        "migration_insight": {
+          "fit": {
+            "fit_level": "FIT"
+          }
+        }
+      }
+    ]
   },
-  "record_array": [
-    {
-      "field_a": "1",
-      "field_b": 1
-    },
-    {
-      "field_a": "2",
-      "field_b": 2
-    }
-  ],
-  "record_map": [
+  "labels": [
     {
       "key": "key",
-      "value": {
-        "field_a": "value",
-        "field_b": 0
-      }
+      "value": "value"
+    },
+    {
+      "key": "key2",
+      "value": "value2"
     }
   ],
-  "record_ptr": {
-    "field_a": "test",
-    "field_b": 10
+  "machine_details": {
+    "core_count": 0,
+    "machine_name": "foo",
+    "memory_mb": 10,
+    "power_state": "POWER_STATE_UNSPECIFIED",
+    "uuid": ""
   },
-  "string_scalar": "foo",
-  "timestamp": "1970-01-01T00:22:17Z",
-  "timestamp_ptr": "1970-01-01T00:22:17Z"
+  "name": "foo"
 }
