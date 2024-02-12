@@ -1,0 +1,17 @@
+functions-framework==3.*
+google-auth-httplib2 
+google-auth-oauthlib
+google-auth==2.27.0
+requests==2.31.0
+pandas
+fsspec
+requests
+gcsfs
+google-cloud
+openpyxl
+numpy
+datetime
+google
+google-api-python-client 
+google-cloud-migrationcenter
+google-cloud-logging

@@ -1,0 +1,7 @@
+gcp_project_id        = "<project-id>"
+gcp_region            = "<resource-location>"
+bucket_name           = "<bucket-name>"
+bigquery_dataset      = "<bq-cast-dataset>"
+bigquery_dataset_location = "US"
+bigquery_table        = "<bq-cast-table>"
+migrationcenter_path  = "projects/<project-id>/locations/<mc-location>"
