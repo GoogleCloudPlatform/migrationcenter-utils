@@ -35,6 +35,8 @@ This Terraform configuration is designed to set up a cloud environment in Google
 | bigquery_table      | Table name for cast data      |   "cast_analysis_results" |
 | migrationcenter_path | This value is to be specified for the cloud function that will create groups in the migration center. | This value is of the pattern “projects/{project_id}/locations/{region of mc}”. Example: “projects/test-vz-2/locations/us-central1” |
 
+> [!IMPORTANT]  
+> **Please assign all the resources created here the same location as the dataset created by MC2BQ tool.** This is because of the colocation requirement from bigquery. More information can be found [here](https://cloud.google.com/bigquery/docs/locations#specify_locations). For example, if the dataset containg migration center data lies in us-central1, then all resources should be created in us-central1.
 
 5.  **Initialize Terraform:**
    - Open a terminal and navigate to the directory containing your Terraform files.

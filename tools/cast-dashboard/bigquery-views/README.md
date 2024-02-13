@@ -71,6 +71,8 @@ To add more cast tables :
 ### 2) Views
    - <project_id>.<dataset_id>.CastReadiness_vw : Contains all data extracted from CAST Highlights tool after applying several transformation steps.
    - <project_id>.<dataset_id>.MigrationCenterInfra_vw : Contains all data extracted from Migration Center after applying several transformation steps.
-   - <project_id>.<dataset_id>.McCastReadinessCombined_vw : Contains combined data from migration Center and CAST joined on the basis of groups. **This is the main view that will be exposed to Looker studio as a data source.**
+   - <project_id>.<dataset_id>.McCastReadinessCombined_vw : Contains combined data from migration Center and CAST joined on the basis of groups. 
+   > [!IMPORTANT] 
+   > **McCastReadinessCombined_vw is the main view that will be exposed to Looker studio as a data source.**
 
 
