@@ -1,5 +1,5 @@
 # Architecture 
-![alt text](https://github.com/varunika/migrationcenter-utils/blob/experimental/tools/cast-dashboard/Architecture%20Diagram.png)
+![alt text](./Architecture%20Diagram.png)
 
 # Overall Data Flow
 
@@ -9,19 +9,19 @@
 **${\color{green}1.}$** User Clones github repo to local.
 
 
-**${\color{green}2.}$** User sets up the [MC2BQ tool](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/mc2bq) by following the instructions in the README file.
+**${\color{green}2.}$** User sets up the [MC2BQ tool](../mc2bq) by following the instructions in the README file.
    * Successful set up of MC2BQ tool should result in creation of a Cloud Run job that can either be run manually on adhoc basis or scheduled to run periodically.
    * The User runs the job to populate the raw tables in Bigquery.
    * Once all the 3 tables: assets, groups and preference_sets have been populated, next steps can be followed to set up the mc-cast dashboard utility.
 
 **${\color{green}3.}$** The User scans their application using the CAST highlights tool.
-   * The Cast highlights tool generates txt files as output viz. [surveyResults.txt and analysisResults.txt](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/cast-dashboard/Cast%20Files)
+   * The Cast highlights tool generates txt files as output viz. [surveyResults.txt and analysisResults.txt](./Cast%20Files)
 
 **${\color{green}4.}$** The MC-cast dashboard utility has two portions - 
-   * [bigquery-views](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/cast-dashboard/bigquery-views)
-   * [cloud-function-trigger](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/cast-dashboard/cloud-function-trigger)
+   * [bigquery-views](./bigquery-views)
+   * [cloud-function-trigger](./cloud-function-trigger)
    
-   The user will first set up only the [cloud-function-trigger](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/cast-dashboard/cloud-function-trigger) part of the utility.
+   The user will first set up only the [cloud-function-trigger](./cloud-function-trigger) part of the utility.
    
 **${\color{green}5.}$** The User uploads analysisResults.txt to Google cloud storage. (Manual process)
    * Two event driven functions i.e Data Loader and Mc Group function are triggered as soon as a file lands in the GCS bucket.
@@ -29,10 +29,10 @@
    * The Mc group function reads the cast file to find the list of applications. These applications are created as groups in the Migration Center console.
 
 6. Once both cloud functions have run successfully, the user needs to map the groups to the assets in the Migration Center.
-7. After mapping all assets to groups successfully, re-run the [CloudRun job](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/mc2bq) to populate the groups table in BigQuery.
+7. After mapping all assets to groups successfully, re-run the [CloudRun job](../mc2bq) to populate the groups table in BigQuery.
 
-8. The user can now set up the [bigquery-views](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/cast-dashboard/bigquery-views) part of the cast-dashboard utility by following the instructions in the README file.
-9. Successful execution of step 8 will result in the final view - **[McCastReadinessCombined_vw](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/cast-dashboard/bigquery-views#2-views)** which will be used in the Looker studio dashboard.
+8. The user can now set up the [bigquery-views](./bigquery-views) part of the cast-dashboard utility by following the instructions in the README file.
+9. Successful execution of step 8 will result in the final view - **[McCastReadinessCombined_vw](./bigquery-views#2-views)** which will be used in the Looker studio dashboard.
 
 10. Open the [template link](https://lookerstudio.google.com/c/reporting/f05dec2f-fa92-4b8b-b379-a067bfdd8b09/page/p_hcrd9nhkbd/preview). Click on “use my own data”
 11. Select the project id and dataset where McCastReadinessCombined_vw was created.
@@ -54,7 +54,7 @@ As of now, there are 4 different components that are required to be setup by the
 
 ### 1. Cloud Run Job (MC2BQ tool)
 The Migration Center to BigQuery is an open source utility which helps you export information from Google Cloud Migration Center to BigQuery tables. The tool runs as a cloud run job. The following instructions will create the required job for exporting the information required from the migration center.  
-To setup the MC2BQ cloud run job please follow the instructions listed [here](https://github.com/GoogleCloudPlatform/migrationcenter-utils/tree/main/tools/mc2bq#readme)
+To setup the MC2BQ cloud run job please follow the instructions listed [here](../mc2bq#readme)
 
 #### RESULT
 
@@ -64,16 +64,16 @@ To setup the MC2BQ cloud run job please follow the instructions listed [here](ht
    * Groups - Contains information about application groups - their Ids, names, descriptions, labels if any.
    * Preference Sets
   
-     ![alt text](https://github.com/varunika/migrationcenter-utils/blob/experimental/tools/cast-dashboard/MigrationCenterTables.png)
+     ![alt text](./MigrationCenterTables.png)
 
 > [!NOTE]
 > As of now, the below steps require default variable values to be used in mc2bq tool.
 
 ### 2. Cloud Functions
-Please open the [Cloud Function Trigger folder](https://github.com/bishtkomal/mc-cast-tf/tree/main/cloud-function-trigger) and follow instructions listed in the ReadMe.
+Please open the [Cloud Function Trigger folder](./cloud-function-trigger) and follow instructions listed in the ReadMe.
 
 ### 3. BigQuery Views
-Please open [the BigQuery Views folder](https://github.com/bishtkomal/mc-cast-tf/tree/main/bigquery-views) and follow instructions listed in the ReadMe.
+Please open [the BigQuery Views folder](./bigquery-views) and follow instructions listed in the ReadMe.
 
 ### 4. Looker Studio Dashboard
 Assumptions:
