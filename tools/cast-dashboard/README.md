@@ -15,7 +15,7 @@
    * Once all the 3 tables: assets, groups and preference_sets have been populated, next steps can be followed to set up the mc-cast dashboard utility.
 
 **${\color{green}3.}$** The User scans their application using the CAST highlights tool.
-   * The Cast highlights tool generates txt files as output viz. surveyResults.txt and analysisResults.txt
+   * The Cast highlights tool generates txt files as output viz. [surveyResults.txt and analysisResults.txt](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/cast-dashboard/Cast%20Files)
 
 **${\color{green}4.}$** The MC-cast dashboard utility has two portions - 
    * [bigquery-views](https://github.com/varunika/migrationcenter-utils/tree/experimental/tools/cast-dashboard/bigquery-views)
@@ -63,6 +63,8 @@ To setup the MC2BQ cloud run job please follow the instructions listed [here](ht
    * Assets - Contains information about the workloads ( VMs) and mapping to groups.
    * Groups - Contains information about application groups - their Ids, names, descriptions, labels if any.
    * Preference Sets
+  
+     ![alt text](https://github.com/varunika/migrationcenter-utils/blob/experimental/tools/cast-dashboard/MigrationCenterTables.png)
 
 > [!NOTE]
 > As of now, the below steps require default variable values to be used in mc2bq tool.
