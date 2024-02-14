@@ -5,9 +5,11 @@
 This Terraform configuration is designed to set up a BigQuery dataset and a set of tables (or views) in Google Cloud Platform (GCP). It dynamically creates BigQuery tables based on provided configurations, making it an efficient tool for setting up complex data environments in GCP.
 
 ## Assumptions
+1) Terraform is already installed. If not installed already, follow the steps listed [here](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/install-cli).
 1) The User has already set up and run Cloud run job for Migration Center to BigQuery
 1) Raw tables containing data from the migration center already exist in BigQuery.
-1) Terraform is already installed. If not installed already, follow the steps listed [here](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/install-cli).
+1) Cast file has been loaded to BigQuery and groups have been created in migration center as part of the [cloud-function-trigger](../cloud-function-trigger) step
+2) Cloud run job has re-run according to the step 10 mentioned [here](../cloud-function-trigger/README.md)
 
 ## Configuration Details
 
