@@ -59,7 +59,10 @@ This Terraform configuration is designed to set up a cloud environment in Google
 9. **Map assets to groups**
     - After creation of groups is successfull, we now need to map assets to these groups.
     - As of now this is a manual process and needs to be handled through the UI.
-
+10. **Re-run CloudRun Job**
+    - Since new asset to group mappings have been added to migration center in step 9, it is necessary for this data to reflect in the migration center tables created in bigquery.
+    - Re-running the cloudrun job should populate groups table with details around newly created groups and add group relation to assets table.
+      
 ## Expected Results from terraform
 
 - This setup will enable necessary APIs like Cloud Functions, Artifact Registry, and others in your GCP project.
