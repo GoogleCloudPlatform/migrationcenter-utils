@@ -84,6 +84,7 @@ resource "google_cloud_run_v2_job" "mc2bq_cloud_run_sync_job" {
         args = concat([
           "-force",
           "-target-project", local.target_project,
+          "-region", var.region,
           var.project,
           var.dataset
         ], var.table_prefix == "" ? [] : [var.table_prefix])
