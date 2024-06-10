@@ -49,6 +49,7 @@ type Params struct {
 	DatasetID       string
 	TablePrefix     string
 	Schema          *exporterschema.ExporterSchema
+	MCOptions       []option.ClientOption
 	UserAgentSuffix string
 }
 
@@ -69,7 +70,14 @@ func buildClientOptions(params *Params) []option.ClientOption {
 		userAgent += "_" + params.UserAgentSuffix
 	}
 	opts = append(opts, option.WithUserAgent(userAgent))
+	return opts
+}
 
+func buildMCClientOptions(params *Params) []option.ClientOption {
+	opts := buildClientOptions(params)
+	if params.MCOptions != nil {
+		opts = append(opts, params.MCOptions...)
+	}
 	return opts
 }
 
@@ -121,7 +129,7 @@ func newExportTask(ctx context.Context, dataset *bigquery.Dataset, params *Param
 
 // MCFactory creates a an MC implementation accorording to params
 func MCFactory(ctx context.Context, params *Params) (mcutil.MC, error) {
-	svc, err := migrationcenter.NewClient(ctx, buildClientOptions(params)...)
+	svc, err := migrationcenter.NewClient(ctx, buildMCClientOptions(params)...)
 	if err != nil {
 		return nil, fmt.Errorf("create migration center client: %w", err)
 	}
