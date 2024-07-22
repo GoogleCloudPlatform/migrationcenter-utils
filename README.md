@@ -8,6 +8,7 @@ This repository is broken up into:
 
 * [Tools](/tools)
   * [mc2bq](/tools/mc2bq) - Migration Center exported to BigQuery.
+  * [mconnect](/tools/mconnect) - Merges information from Google Cloud Migration Center and static code analysis of applications performed by CAST Software to BigQuery for data analysis in Looker Studio
 
 ## Contributing
 
