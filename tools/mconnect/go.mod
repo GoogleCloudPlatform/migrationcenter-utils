@@ -3,7 +3,7 @@ module github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mconnect
 go 1.22
 
 require (
-	cloud.google.com/go/bigquery v1.57.1
+	cloud.google.com/go/bigquery v1.62.0
 	cloud.google.com/go/longrunning v0.5.4
 	cloud.google.com/go/migrationcenter v0.2.4
 	github.com/google/go-cmp v0.6.0
