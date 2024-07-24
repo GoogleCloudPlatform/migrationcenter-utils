@@ -24,10 +24,10 @@ import (
 	"strings"
 
 	migrationcenter "cloud.google.com/go/migrationcenter/apiv1"
+	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mconnect/commands/root"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mconnect/mcutil"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mconnect/messages"
 	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mconnect/parser"
-	"github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mconnect/commands/root"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/spf13/cobra"
 	"google.golang.org/api/option"
@@ -81,6 +81,7 @@ func (gc *mcGroupCreator) build(pal mcutil.ProjectAndLocation, client groupsClie
 // create creates Migration Center groups for each group sequentially. It also adds a 'mconnect' label to each group created.
 func (gc *mcGroupCreator) create(ctx context.Context, groups []string, ignoreExist bool) error {
 
+	var errors []string
 	label := map[string]string{LabelKey: labelValue}
 	for _, group := range groups {
 		// Prepare group details -
@@ -99,22 +100,38 @@ func (gc *mcGroupCreator) create(ctx context.Context, groups []string, ignoreExi
 		req := &migrationcenterpb.CreateGroupRequest{Parent: gc.pal.Path(), GroupId: groupID, Group: groupDetails}
 		op, err := gc.client.CreateGroup(ctx, req)
 		if err != nil {
-			if alreadyExist(err) && ignoreExist {
-				if err := gc.updateLabel(ctx, groupID); err != nil {
+			if alreadyExist(err) {
+				if !ignoreExist {
+					errors = append(errors, fmt.Sprintf("Group %q already exists, use the --ignore-existing-groups flag if you would like to update it with the MConnect label.", group))
+				} else if err := gc.updateLabel(ctx, groupID); err != nil {
 					return err
 				}
 				continue
 			}
-			return fmt.Errorf("failed creating group: '%v', err: %v", group, err)
+			errors = append(errors, fmt.Sprintf("Group: %q, err: %v", group, err))
+			continue
 		}
+
 		_, err = op.Wait(ctx)
 		if err != nil {
-			return fmt.Errorf("failed creating group: '%v', err: %v", group, err)
+			errors = append(errors, fmt.Sprintf("Group: %q, err: %v", group, err))
 		}
 		fmt.Println(messages.GroupCreated{Group: groupID})
 	}
 
+	if errors != nil {
+		return fmt.Errorf("%s", formatMultipleErrors(errors))
+	}
+
 	return nil
+}
+
+func formatMultipleErrors(errors []string) string {
+	errMessage := ""
+	for i, err := range errors {
+		errMessage = errMessage + fmt.Sprintf("\n%d. %s", i+1, err)
+	}
+	return errMessage
 }
 
 func (gc *mcGroupCreator) updateLabel(ctx context.Context, groupID string) error {
