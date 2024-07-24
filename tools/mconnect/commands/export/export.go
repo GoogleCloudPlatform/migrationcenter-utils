@@ -179,7 +179,7 @@ func (c *castExporter) createTable(ctx context.Context, client *bq.Client, f *os
 	source.SkipLeadingRows = 1 // CSV has a single header line.
 
 	loader := client.Dataset(c.datasetID).Table(c.tableID).LoaderFrom(source)
-	loader.LoadConfig.ColumnNameCharacterMap = bq.V2ColumnNameCharacterMap
+	loader.LoadConfig.ColumnNameCharacterMap = bq.V1ColumnNameCharacterMap
 	if force {
 		exist, err := c.tableExist(ctx, client)
 		if err != nil {
