@@ -53,11 +53,19 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: ${{ runner.os }}-go-
 
-    - name: Run go test
-      run: cd tools/mc2bq && go test -v -race -coverprofile coverage.txt -covermode atomic ./...
+    - name: Run tests and combine coverage
+      run: |
+        mkdir -p coverage
+        cd tools/mc2bq && go test -v -race -coverprofile ../../coverage/coverage.mc2bq.txt -covermode atomic ./...
+        cd ../mconnect && go test -v -race -coverprofile ../../coverage/coverage.mconnect.txt -covermode atomic ./...
+        cd ../../coverage
+        echo "mode: atomic" > coverage.txt
+        tail -q -n +2 coverage.*.txt >> coverage.txt
       env:
         SKIP_E2E: "TRUE"
 
     - name: Upload coverage to Codecov
       if: ${{ matrix.update-coverage }}
       uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage/coverage.txt
