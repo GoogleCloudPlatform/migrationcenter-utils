@@ -23,17 +23,14 @@ import (
 	"context"
 	"fmt"
 	"testing"
-
-	bq "cloud.google.com/go/bigquery"
 )
 
 type fakeViewCreator struct {
 	ProjectID string
 	DatasetID string
-	Client    *bq.Client
 }
 
-func (vc *fakeViewCreator) build(projectID, datasetID string, _ *bq.Client) viewCreator {
+func (vc *fakeViewCreator) build(projectID, datasetID string) viewCreator {
 	vc.ProjectID = projectID
 	vc.DatasetID = datasetID
 	return vc

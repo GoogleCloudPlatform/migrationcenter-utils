@@ -61,7 +61,7 @@ func newViewMetadata(name, description, query string) viewMetadata {
 }
 
 type viewCreatorFactory interface {
-	build(projectID, datasetID string, client *bq.Client) viewCreator
+	build(projectID, datasetID string) viewCreator
 }
 
 type viewCreator interface {
@@ -71,13 +71,11 @@ type viewCreator interface {
 type bqViewCreator struct {
 	projectID string
 	datasetID string
-	client    *bq.Client
 }
 
-func (vc *bqViewCreator) build(projectID, datasetID string, client *bq.Client) viewCreator {
+func (vc *bqViewCreator) build(projectID, datasetID string) viewCreator {
 	vc.projectID = projectID
 	vc.datasetID = datasetID
-	vc.client = client
 	return vc
 }
 
@@ -85,14 +83,21 @@ func (vc *bqViewCreator) build(projectID, datasetID string, client *bq.Client) v
 // If the view already exists and force is false an error will be returned.
 // If the view already exists and force is true, the old view will be overwritten.
 func (vc *bqViewCreator) createView(ctx context.Context, metadata viewMetadata) error {
+	client, err := bq.NewClient(ctx, vc.projectID, option.WithUserAgent(messages.ViewsUserAgent))
+	if err != nil {
+		return fmt.Errorf("bigquery.NewClient: %v", err)
+	}
+
+	defer client.Close()
+
 	bqMetaData := &bq.TableMetadata{Name: metadata.name, Description: metadata.description, ViewQuery: metadata.query}
 	if force {
-		oldMetadata, err := vc.client.Dataset(vc.datasetID).Table(metadata.name).Metadata(ctx)
+		oldMetadata, err := client.Dataset(vc.datasetID).Table(metadata.name).Metadata(ctx)
 		if err != nil && !gapiutil.IsErrorWithCode(err, http.StatusNotFound) {
 			return err
 		}
 		if oldMetadata != nil {
-			err := vc.client.Dataset(vc.datasetID).Table(metadata.name).Delete(ctx)
+			err := client.Dataset(vc.datasetID).Table(metadata.name).Delete(ctx)
 			if err != nil {
 				return err
 			}
@@ -100,7 +105,7 @@ func (vc *bqViewCreator) createView(ctx context.Context, metadata viewMetadata) 
 		}
 	}
 
-	if err := vc.client.Dataset(vc.datasetID).Table(metadata.name).Create(ctx, bqMetaData); err != nil {
+	if err := client.Dataset(vc.datasetID).Table(metadata.name).Create(ctx, bqMetaData); err != nil {
 		return err
 	}
 	fmt.Println(messages.ViewCreated{Name: metadata.name})
@@ -132,14 +137,7 @@ mconnect create-views --project=my-project-id --dataset=dataset-id --force=true`
 				return messages.NoArgumentsAcceptedError{Args: args}.Error()
 			}
 
-			client, err := bq.NewClient(ctx, projectID, option.WithUserAgent(messages.ViewsUserAgent))
-			if err != nil {
-				return fmt.Errorf("bigquery.NewClient: %v", err)
-			}
-
-			defer client.Close()
-
-			vc := factory.build(projectID, datasetID, client)
+			vc := factory.build(projectID, datasetID)
 			viewsMetadata := []viewMetadata{
 				newViewMetadata(mcViewName, "mc view description", mcQuery(projectID, datasetID)),
 				newViewMetadata(castViewName, "cast view description", castQuery(projectID, datasetID)),
