@@ -38,7 +38,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.get_version.outputs.RELEASE_TAG }}
-        release_name: Release ${{ steps.get_version.outputs.RELEASE_TAG }}
+        release_name: MConnect Release ${{ steps.get_version.outputs.RELEASE_TAG }}
         draft: false
         prerelease: false
 
