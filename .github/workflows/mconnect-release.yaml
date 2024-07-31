@@ -1,0 +1,53 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Build
+      run: |
+        cd tools/mconnect
+        go build -o mconnect
+
+    - name: Get version
+      id: get_version
+      run: |
+        cd tools/mconnect
+        VERSION=$(./mconnect -v | sed 's/Mconnect version //')
+        TIMESTAMP=$(date +%Y%m%d%H%M%S)
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+        echo "RELEASE_TAG=${VERSION}-${TIMESTAMP}" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.get_version.outputs.RELEASE_TAG }}
+        release_name: Release ${{ steps.get_version.outputs.RELEASE_TAG }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./tools/mconnect/mconnect
+        asset_name: mconnect
+        asset_content_type: application/octet-stream
