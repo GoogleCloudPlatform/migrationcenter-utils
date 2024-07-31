@@ -28,8 +28,8 @@ jobs:
         cd tools/mconnect
         VERSION=$(./mconnect -v | sed 's/Mconnect version //')
         TIMESTAMP=$(date +%Y%m%d%H%M%S)
-        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
-        echo "RELEASE_TAG=${VERSION}-${TIMESTAMP}" >> $GITHUB_OUTPUT
+        echo "VERSION=v${VERSION}" >> $GITHUB_OUTPUT
+        echo "RELEASE_TAG=v${VERSION}-${TIMESTAMP}" >> $GITHUB_OUTPUT
 
     - name: Create Release
       id: create_release
