@@ -20,7 +20,7 @@ jobs:
     - name: Build
       run: |
         cd tools/mconnect
-        go build -o mconnect
+        CGO_ENABLED=0 go build -o mconnect
 
     - name: Get version
       id: get_version
