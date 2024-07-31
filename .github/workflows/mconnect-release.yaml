@@ -1,4 +1,4 @@
-name: Build and Release
+name: MConnect Release
 
 on:
   push:
