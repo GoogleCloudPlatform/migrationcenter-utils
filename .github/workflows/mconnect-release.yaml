@@ -26,7 +26,7 @@ jobs:
       id: get_version
       run: |
         cd tools/mconnect
-        VERSION=$(./mconnect -v | sed 's/Mconnect version //')
+        VERSION=$(./mconnect -v | sed 's/mconnect version //')
         TIMESTAMP=$(date +%Y%m%d%H%M%S)
         echo "VERSION=v${VERSION}" >> $GITHUB_OUTPUT
         echo "RELEASE_TAG=v${VERSION}-${TIMESTAMP}" >> $GITHUB_OUTPUT
