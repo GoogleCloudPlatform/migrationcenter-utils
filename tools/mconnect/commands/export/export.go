@@ -239,6 +239,9 @@ By default it will be assumed that the project and region used for Migration Cen
 				return messages.NoArgumentsAcceptedError{Args: args}.Error()
 			}
 
+			// Remove usage printing on error once initial parameter validations are done.
+			cmd.SilenceUsage = true
+
 			if datasetID == "" {
 				datasetID = defaultDatasetID
 			}

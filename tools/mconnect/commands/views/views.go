@@ -137,6 +137,9 @@ mconnect create-views --project=my-project-id --dataset=dataset-id --force=true`
 				return messages.NoArgumentsAcceptedError{Args: args}.Error()
 			}
 
+			// Remove usage printing on error once initial parameter validations are done.
+			cmd.SilenceUsage = true
+
 			vc := factory.build(projectID, datasetID)
 			viewsMetadata := []viewMetadata{
 				newViewMetadata(mcViewName, "mc view description", mcQuery(projectID, datasetID)),

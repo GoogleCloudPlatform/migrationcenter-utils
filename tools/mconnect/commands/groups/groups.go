@@ -183,6 +183,9 @@ func NewCreateGroupsCmd(factory groupCreatorFactory) *cobra.Command {
 				return messages.NoArgumentsAcceptedError{Args: args}.Error()
 			}
 
+			// Remove usage printing on error once initial parameter validations are done.
+			cmd.SilenceUsage = true
+
 			fmt.Println(messages.ParsingFile{FilePath: path})
 			groups, err := parser.Groups(path)
 			if err != nil {
