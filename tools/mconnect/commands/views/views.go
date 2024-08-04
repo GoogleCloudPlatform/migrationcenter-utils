@@ -22,6 +22,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	bq "cloud.google.com/go/bigquery"
 	gp "github.com/GoogleCloudPlatform/migrationcenter-utils/tools/mconnect/commands/groups"
@@ -222,5 +223,6 @@ func combinedQuery(projectID, datasetID string) string {
 }
 
 func lookerStudioLink(projectID, datasetID string) string {
-	return fmt.Sprintf(`https://lookerstudio.google.com/c/u/0/reporting/create?c.reportId=%v&c.mode=edit&ds.ds5.datasourceName=MConnect&ds.ds5.connector=bigQuery&ds.ds5.projectId=%v&ds.ds5.type=CUSTOM_QUERY&ds.ds5.sql=SELECT%%20*%%20FROM%%20%%20%v.%v.%v`, lookerReportID, projectID, projectID, datasetID, combinedViewName)
+	selectAll := url.QueryEscape("*")
+	return fmt.Sprintf(`https://lookerstudio.google.com/c/u/0/reporting/create?c.reportId=%v&c.mode=edit&ds.ds5.datasourceName=MConnect&ds.ds5.connector=bigQuery&ds.ds5.projectId=%v&ds.ds5.type=CUSTOM_QUERY&ds.ds5.sql=SELECT%%20%v%%20FROM%%20%%20%v.%v.%v`, lookerReportID, projectID, selectAll, projectID, datasetID, combinedViewName)
 }
