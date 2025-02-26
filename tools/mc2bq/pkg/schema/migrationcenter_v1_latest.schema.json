@@ -1,1419 +1,2108 @@
-{
-  "asset_table": [
-    {
-      "name": "name",
+{"asset_table":[
+ {
+  "name": "name",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "title",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "create_time",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "update_time",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "labels",
+  "type": "RECORD",
+  "mode": "REPEATED",
+  "fields": [
+   {
+    "name": "key",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "value",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   }
+  ]
+ },
+ {
+  "name": "attributes",
+  "type": "RECORD",
+  "mode": "REPEATED",
+  "fields": [
+   {
+    "name": "key",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "value",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   }
+  ]
+ },
+ {
+  "name": "machine_details",
+  "type": "RECORD",
+  "mode": "NULLABLE",
+  "fields": [
+   {
+    "name": "uuid",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "machine_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "create_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "core_count",
+    "type": "INTEGER",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "memory_mb",
+    "type": "INTEGER",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "power_state",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "architecture",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "cpu_architecture",
       "type": "STRING",
       "mode": "NULLABLE"
-    },
-    {
-      "name": "create_time",
-      "type": "TIMESTAMP",
+     },
+     {
+      "name": "cpu_name",
+      "type": "STRING",
       "mode": "NULLABLE"
-    },
-    {
-      "name": "update_time",
-      "type": "TIMESTAMP",
+     },
+     {
+      "name": "cpu_manufacturer",
+      "type": "STRING",
       "mode": "NULLABLE"
-    },
-    {
-      "name": "labels",
-      "type": "RECORD",
-      "mode": "REPEATED",
-      "fields": [
-        {
-          "name": "key",
-          "type": "STRING",
-          "mode": "NULLABLE"
-        },
-        {
-          "name": "value",
-          "type": "STRING",
-          "mode": "NULLABLE"
-        }
-      ]
-    },
-    {
-      "name": "attributes",
-      "type": "RECORD",
-      "mode": "REPEATED",
-      "fields": [
-        {
-          "name": "key",
-          "type": "STRING",
-          "mode": "NULLABLE"
-        },
-        {
-          "name": "value",
-          "type": "STRING",
-          "mode": "NULLABLE"
-        }
-      ]
-    },
-    {
-      "name": "machine_details",
+     },
+     {
+      "name": "vendor",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "cpu_thread_count",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "cpu_socket_count",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "bios",
       "type": "RECORD",
       "mode": "NULLABLE",
       "fields": [
-        {
+       {
+        "name": "bios_name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "manufacturer",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "version",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "release_date",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "year",
+          "type": "INTEGER",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "month",
+          "type": "INTEGER",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "day",
+          "type": "INTEGER",
+          "mode": "NULLABLE"
+         }
+        ]
+       },
+       {
+        "name": "smbios_uuid",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "firmware_type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "hyperthreading",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     }
+    ]
+   },
+   {
+    "name": "guest_os",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "os_name",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "family",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "version",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "config",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "issue",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "fstab",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "entries",
+          "type": "RECORD",
+          "mode": "REPEATED",
+          "fields": [
+           {
+            "name": "spec",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "file",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "vfstype",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "mntops",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "freq",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "passno",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "name": "hosts",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "entries",
+          "type": "RECORD",
+          "mode": "REPEATED",
+          "fields": [
+           {
+            "name": "ip",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "host_names",
+            "type": "STRING",
+            "mode": "REPEATED"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "name": "nfs_exports",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "entries",
+          "type": "RECORD",
+          "mode": "REPEATED",
+          "fields": [
+           {
+            "name": "export_directory",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "hosts",
+            "type": "STRING",
+            "mode": "REPEATED"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "name": "selinux_mode",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "runtime",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "services",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "entries",
+          "type": "RECORD",
+          "mode": "REPEATED",
+          "fields": [
+           {
+            "name": "service_name",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "state",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "start_mode",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "exe_path",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "cmdline",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "pid",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "name": "processes",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "entries",
+          "type": "RECORD",
+          "mode": "REPEATED",
+          "fields": [
+           {
+            "name": "pid",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "exe_path",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "cmdline",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "user",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "attributes",
+            "type": "RECORD",
+            "mode": "REPEATED",
+            "fields": [
+             {
+              "name": "key",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "value",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "name": "network",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "scan_time",
+          "type": "TIMESTAMP",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "connections",
+          "type": "RECORD",
+          "mode": "NULLABLE",
+          "fields": [
+           {
+            "name": "entries",
+            "type": "RECORD",
+            "mode": "REPEATED",
+            "fields": [
+             {
+              "name": "protocol",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "local_ip_address",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "local_port",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "remote_ip_address",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "remote_port",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "state",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "pid",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "process_name",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "name": "last_boot_time",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "domain",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "machine_name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "installed_apps",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "entries",
+          "type": "RECORD",
+          "mode": "REPEATED",
+          "fields": [
+           {
+            "name": "application_name",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "vendor",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "install_time",
+            "type": "TIMESTAMP",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "path",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "version",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "licenses",
+            "type": "STRING",
+            "mode": "REPEATED"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "name": "open_file_list",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "entries",
+          "type": "RECORD",
+          "mode": "REPEATED",
+          "fields": [
+           {
+            "name": "command",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "user",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "file_type",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "file_path",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "network",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "primary_ip_address",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "public_ip_address",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "primary_mac_address",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "adapters",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "entries",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+         {
+          "name": "adapter_type",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "mac_address",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "addresses",
+          "type": "RECORD",
+          "mode": "NULLABLE",
+          "fields": [
+           {
+            "name": "entries",
+            "type": "RECORD",
+            "mode": "REPEATED",
+            "fields": [
+             {
+              "name": "ip_address",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "subnet_mask",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "bcast",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "fqdn",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "assignment",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "disks",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "total_capacity_bytes",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "total_free_bytes",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "disks",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "entries",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+         {
+          "name": "capacity_bytes",
+          "type": "INTEGER",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "free_bytes",
+          "type": "INTEGER",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "disk_label",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "disk_label_type",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "interface_type",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "partitions",
+          "type": "RECORD",
+          "mode": "NULLABLE",
+          "fields": [
+           {
+            "name": "entries",
+            "type": "RECORD",
+            "mode": "REPEATED",
+            "fields": [
+             {
+              "name": "type",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "file_system",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "mount_point",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "capacity_bytes",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "free_bytes",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "uuid",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "type_category",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "name": "hw_address",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "vmware",
+          "type": "RECORD",
+          "mode": "NULLABLE",
+          "fields": [
+           {
+            "name": "backing_type",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "shared",
+            "type": "BOOLEAN",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "vmdk_mode",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "rdm_compatibility",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "disk_partitions",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "total_capacity_bytes",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "free_space_bytes",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "partitions",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "entries",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+         {
+          "name": "type",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "file_system",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "mount_point",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "capacity_bytes",
+          "type": "INTEGER",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "free_bytes",
+          "type": "INTEGER",
+          "mode": "NULLABLE"
+         },
+         {
           "name": "uuid",
           "type": "STRING",
           "mode": "NULLABLE"
-        },
-        {
-          "name": "machine_name",
+         },
+         {
+          "name": "type_category",
           "type": "STRING",
           "mode": "NULLABLE"
-        },
-        {
-          "name": "create_time",
-          "type": "TIMESTAMP",
-          "mode": "NULLABLE"
-        },
-        {
-          "name": "core_count",
-          "type": "INTEGER",
-          "mode": "NULLABLE"
-        },
-        {
-          "name": "memory_mb",
-          "type": "INTEGER",
-          "mode": "NULLABLE"
-        },
-        {
-          "name": "power_state",
-          "type": "STRING",
-          "mode": "NULLABLE"
-        },
-        {
-          "name": "architecture",
-          "type": "RECORD",
-          "mode": "NULLABLE",
-          "fields": [
-            {
-              "name": "cpu_architecture",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "cpu_name",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "vendor",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "cpu_thread_count",
-              "type": "INTEGER",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "cpu_socket_count",
-              "type": "INTEGER",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "bios",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "bios_name",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "id",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "manufacturer",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "version",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "release_date",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "year",
-                      "type": "INTEGER",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "month",
-                      "type": "INTEGER",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "day",
-                      "type": "INTEGER",
-                      "mode": "NULLABLE"
-                    }
-                  ]
-                },
-                {
-                  "name": "smbios_uuid",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                }
-              ]
-            },
-            {
-              "name": "firmware_type",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "hyperthreading",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            }
-          ]
-        },
-        {
-          "name": "guest_os",
-          "type": "RECORD",
-          "mode": "NULLABLE",
-          "fields": [
-            {
-              "name": "os_name",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "family",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "version",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "config",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "issue",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "fstab",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "entries",
-                      "type": "RECORD",
-                      "mode": "REPEATED",
-                      "fields": [
-                        {
-                          "name": "spec",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "file",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "vfstype",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "mntops",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "freq",
-                          "type": "INTEGER",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "passno",
-                          "type": "INTEGER",
-                          "mode": "NULLABLE"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "hosts",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "entries",
-                      "type": "RECORD",
-                      "mode": "REPEATED",
-                      "fields": [
-                        {
-                          "name": "ip",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "host_names",
-                          "type": "STRING",
-                          "mode": "REPEATED"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "nfs_exports",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "entries",
-                      "type": "RECORD",
-                      "mode": "REPEATED",
-                      "fields": [
-                        {
-                          "name": "export_directory",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "hosts",
-                          "type": "STRING",
-                          "mode": "REPEATED"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "selinux_mode",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                }
-              ]
-            },
-            {
-              "name": "runtime",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "services",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "entries",
-                      "type": "RECORD",
-                      "mode": "REPEATED",
-                      "fields": [
-                        {
-                          "name": "service_name",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "state",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "start_mode",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "exe_path",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "cmdline",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "pid",
-                          "type": "INTEGER",
-                          "mode": "NULLABLE"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "processes",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "entries",
-                      "type": "RECORD",
-                      "mode": "REPEATED",
-                      "fields": [
-                        {
-                          "name": "pid",
-                          "type": "INTEGER",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "exe_path",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "cmdline",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "user",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "attributes",
-                          "type": "RECORD",
-                          "mode": "REPEATED",
-                          "fields": [
-                            {
-                              "name": "key",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "value",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "network",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "scan_time",
-                      "type": "TIMESTAMP",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "connections",
-                      "type": "RECORD",
-                      "mode": "NULLABLE",
-                      "fields": [
-                        {
-                          "name": "entries",
-                          "type": "RECORD",
-                          "mode": "REPEATED",
-                          "fields": [
-                            {
-                              "name": "protocol",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "local_ip_address",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "local_port",
-                              "type": "INTEGER",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "remote_ip_address",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "remote_port",
-                              "type": "INTEGER",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "state",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "pid",
-                              "type": "INTEGER",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "process_name",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "last_boot_time",
-                  "type": "TIMESTAMP",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "domain",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "machine_name",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "installed_apps",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "entries",
-                      "type": "RECORD",
-                      "mode": "REPEATED",
-                      "fields": [
-                        {
-                          "name": "application_name",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "vendor",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "install_time",
-                          "type": "TIMESTAMP",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "path",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "version",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "open_file_list",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "entries",
-                      "type": "RECORD",
-                      "mode": "REPEATED",
-                      "fields": [
-                        {
-                          "name": "command",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "user",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "file_type",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "file_path",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "network",
-          "type": "RECORD",
-          "mode": "NULLABLE",
-          "fields": [
-            {
-              "name": "primary_ip_address",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "public_ip_address",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "primary_mac_address",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "adapters",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "entries",
-                  "type": "RECORD",
-                  "mode": "REPEATED",
-                  "fields": [
-                    {
-                      "name": "adapter_type",
-                      "type": "STRING",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "mac_address",
-                      "type": "STRING",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "addresses",
-                      "type": "RECORD",
-                      "mode": "NULLABLE",
-                      "fields": [
-                        {
-                          "name": "entries",
-                          "type": "RECORD",
-                          "mode": "REPEATED",
-                          "fields": [
-                            {
-                              "name": "ip_address",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "subnet_mask",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "bcast",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "fqdn",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "assignment",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "disks",
-          "type": "RECORD",
-          "mode": "NULLABLE",
-          "fields": [
-            {
-              "name": "total_capacity_bytes",
-              "type": "INTEGER",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "total_free_bytes",
-              "type": "INTEGER",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "disks",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "entries",
-                  "type": "RECORD",
-                  "mode": "REPEATED",
-                  "fields": [
-                    {
-                      "name": "capacity_bytes",
-                      "type": "INTEGER",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "free_bytes",
-                      "type": "INTEGER",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "disk_label",
-                      "type": "STRING",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "disk_label_type",
-                      "type": "STRING",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "interface_type",
-                      "type": "STRING",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "partitions",
-                      "type": "RECORD",
-                      "mode": "NULLABLE",
-                      "fields": [
-                        {
-                          "name": "entries",
-                          "type": "RECORD",
-                          "mode": "REPEATED",
-                          "fields": [
-                            {
-                              "name": "type",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "file_system",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "mount_point",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "capacity_bytes",
-                              "type": "INTEGER",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "free_bytes",
-                              "type": "INTEGER",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "uuid",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "name": "hw_address",
-                      "type": "STRING",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "vmware",
-                      "type": "RECORD",
-                      "mode": "NULLABLE",
-                      "fields": [
-                        {
-                          "name": "backing_type",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "shared",
-                          "type": "BOOLEAN",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "vmdk_mode",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "rdm_compatibility",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "platform",
-          "type": "RECORD",
-          "mode": "NULLABLE",
-          "fields": [
-            {
-              "name": "vmware_details",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "vcenter_version",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "esx_version",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "osid",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "vcenter_folder",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "vcenter_uri",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "vcenter_vm_id",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                }
-              ]
-            },
-            {
-              "name": "aws_ec2_details",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "machine_type_label",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "location",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                }
-              ]
-            },
-            {
-              "name": "azure_vm_details",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "machine_type_label",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "location",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "provisioning_state",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                }
-              ]
-            },
-            {
-              "name": "generic_details",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "location",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                }
-              ]
-            },
-            {
-              "name": "physical_details",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "location",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                }
-              ]
-            }
-          ]
-        }
+         }
+        ]
+       }
       ]
-    },
-    {
-      "name": "insight_list",
+     }
+    ]
+   },
+   {
+    "name": "platform",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "vmware_details",
       "type": "RECORD",
       "mode": "NULLABLE",
       "fields": [
-        {
-          "name": "insights",
-          "type": "RECORD",
-          "mode": "REPEATED",
-          "fields": [
-            {
-              "name": "migration_insight",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "fit",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "fit_level",
-                      "type": "STRING",
-                      "mode": "NULLABLE"
-                    }
-                  ]
-                },
-                {
-                  "name": "compute_engine_target",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "shape",
-                      "type": "RECORD",
-                      "mode": "NULLABLE",
-                      "fields": [
-                        {
-                          "name": "memory_mb",
-                          "type": "INTEGER",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "physical_core_count",
-                          "type": "INTEGER",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "logical_core_count",
-                          "type": "INTEGER",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "series",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "machine_type",
-                          "type": "STRING",
-                          "mode": "NULLABLE"
-                        },
-                        {
-                          "name": "storage",
-                          "type": "RECORD",
-                          "mode": "REPEATED",
-                          "fields": [
-                            {
-                              "name": "type",
-                              "type": "STRING",
-                              "mode": "NULLABLE"
-                            },
-                            {
-                              "name": "size_gb",
-                              "type": "INTEGER",
-                              "mode": "NULLABLE"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "generic_insight",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "message_id",
-                  "type": "INTEGER",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "default_message",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "additional_information",
-                  "type": "STRING",
-                  "mode": "REPEATED"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "update_time",
-          "type": "TIMESTAMP",
-          "mode": "NULLABLE"
-        }
+       {
+        "name": "vcenter_version",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "esx_version",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "osid",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "vcenter_folder",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "vcenter_uri",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "vcenter_vm_id",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "esx_hyperthreading",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
       ]
-    },
-    {
-      "name": "performance_data",
+     },
+     {
+      "name": "aws_ec2_details",
       "type": "RECORD",
       "mode": "NULLABLE",
       "fields": [
-        {
-          "name": "daily_resource_usage_aggregations",
-          "type": "RECORD",
-          "mode": "REPEATED",
-          "fields": [
-            {
-              "name": "date",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "year",
-                  "type": "INTEGER",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "month",
-                  "type": "INTEGER",
-                  "mode": "NULLABLE"
-                },
-                {
-                  "name": "day",
-                  "type": "INTEGER",
-                  "mode": "NULLABLE"
-                }
-              ]
-            },
-            {
-              "name": "cpu",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "utilization_percentage",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "average",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "median",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "nintey_fifth_percentile",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "peak",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "memory",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "utilization_percentage",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "average",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "median",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "nintey_fifth_percentile",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "peak",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "network",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "ingress_bps",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "average",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "median",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "nintey_fifth_percentile",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "peak",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    }
-                  ]
-                },
-                {
-                  "name": "egress_bps",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "average",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "median",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "nintey_fifth_percentile",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "peak",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "disk",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "iops",
-                  "type": "RECORD",
-                  "mode": "NULLABLE",
-                  "fields": [
-                    {
-                      "name": "average",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "median",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "nintey_fifth_percentile",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    },
-                    {
-                      "name": "peak",
-                      "type": "FLOAT",
-                      "mode": "NULLABLE"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
+       {
+        "name": "machine_type_label",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "location",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "hyperthreading",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
       ]
-    },
-    {
-      "name": "sources",
-      "type": "STRING",
-      "mode": "REPEATED"
-    },
-    {
-      "name": "assigned_groups",
-      "type": "STRING",
-      "mode": "REPEATED"
-    }
-  ],
-  "group_table": [
-    {
-      "name": "name",
-      "type": "STRING",
+     },
+     {
+      "name": "azure_vm_details",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "machine_type_label",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "location",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "provisioning_state",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "hyperthreading",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "generic_details",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "location",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "hyperthreading",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "physical_details",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "location",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "hyperthreading",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "database_deployment_details",
+  "type": "RECORD",
+  "mode": "NULLABLE",
+  "fields": [
+   {
+    "name": "generated_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "manual_unique_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "version",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "edition",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "topology",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "core_count",
+      "type": "INTEGER",
       "mode": "NULLABLE"
-    },
-    {
-      "name": "create_time",
-      "type": "TIMESTAMP",
+     },
+     {
+      "name": "physical_core_count",
+      "type": "INTEGER",
       "mode": "NULLABLE"
-    },
-    {
-      "name": "update_time",
-      "type": "TIMESTAMP",
+     },
+     {
+      "name": "memory_bytes",
+      "type": "INTEGER",
       "mode": "NULLABLE"
-    },
-    {
-      "name": "labels",
+     },
+     {
+      "name": "disk_allocated_bytes",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "disk_used_bytes",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "core_limit",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "physical_core_limit",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "memory_limit_bytes",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "instances",
       "type": "RECORD",
       "mode": "REPEATED",
       "fields": [
-        {
-          "name": "key",
+       {
+        "name": "instance_name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "role",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "network",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "primary_mac_address",
           "type": "STRING",
           "mode": "NULLABLE"
-        },
-        {
-          "name": "value",
+         },
+         {
+          "name": "ip_addresses",
           "type": "STRING",
-          "mode": "NULLABLE"
-        }
+          "mode": "REPEATED"
+         },
+         {
+          "name": "host_names",
+          "type": "STRING",
+          "mode": "REPEATED"
+         }
+        ]
+       }
       ]
-    },
-    {
-      "name": "display_name",
+     }
+    ]
+   },
+   {
+    "name": "sql_server",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "features",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "feature_name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "enabled",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "server_flags",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "server_flag_name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "value",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "value_in_use",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "trace_flags",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "trace_flag_name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "scope",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "mysql",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "properties",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "property",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "enabled",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "numeric_value",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "plugins",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "plugin",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "version",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "enabled",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "resource_groups_count",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "variables",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "variable",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "value",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "category",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "postgresql",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "properties",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "property",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "enabled",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "numeric_value",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "settings",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "setting",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "source",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "unit",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "bool_value",
+        "type": "BOOLEAN",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "int_value",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "real_value",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "string_value",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "aggregated_stats",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "database_count",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "database_details",
+  "type": "RECORD",
+  "mode": "NULLABLE",
+  "fields": [
+   {
+    "name": "database_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "parent_database_deployment",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "generated_id",
       "type": "STRING",
       "mode": "NULLABLE"
-    },
-    {
-      "name": "description",
+     },
+     {
+      "name": "manual_unique_id",
       "type": "STRING",
       "mode": "NULLABLE"
-    }
-  ],
-  "preference_set_table": [
-    {
-      "name": "name",
+     }
+    ]
+   },
+   {
+    "name": "allocated_storage_bytes",
+    "type": "INTEGER",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "schemas",
+    "type": "RECORD",
+    "mode": "REPEATED",
+    "fields": [
+     {
+      "name": "schema_name",
       "type": "STRING",
       "mode": "NULLABLE"
-    },
-    {
-      "name": "create_time",
-      "type": "TIMESTAMP",
+     },
+     {
+      "name": "tables_size_bytes",
+      "type": "INTEGER",
       "mode": "NULLABLE"
-    },
-    {
-      "name": "update_time",
-      "type": "TIMESTAMP",
-      "mode": "NULLABLE"
-    },
-    {
-      "name": "display_name",
-      "type": "STRING",
-      "mode": "NULLABLE"
-    },
-    {
-      "name": "description",
-      "type": "STRING",
-      "mode": "NULLABLE"
-    },
-    {
-      "name": "virtual_machine_preferences",
+     },
+     {
+      "name": "objects",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "category",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "count",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "sql_server",
       "type": "RECORD",
       "mode": "NULLABLE",
       "fields": [
-        {
-          "name": "target_product",
-          "type": "STRING",
-          "mode": "NULLABLE"
-        },
-        {
-          "name": "region_preferences",
-          "type": "RECORD",
-          "mode": "NULLABLE",
-          "fields": [
-            {
-              "name": "preferred_regions",
-              "type": "STRING",
-              "mode": "REPEATED"
-            }
-          ]
-        },
-        {
-          "name": "commitment_plan",
-          "type": "STRING",
-          "mode": "NULLABLE"
-        },
-        {
-          "name": "sizing_optimization_strategy",
-          "type": "STRING",
-          "mode": "NULLABLE"
-        },
-        {
-          "name": "compute_engine_preferences",
-          "type": "RECORD",
-          "mode": "NULLABLE",
-          "fields": [
-            {
-              "name": "machine_preferences",
-              "type": "RECORD",
-              "mode": "NULLABLE",
-              "fields": [
-                {
-                  "name": "allowed_machine_series",
-                  "type": "RECORD",
-                  "mode": "REPEATED",
-                  "fields": [
-                    {
-                      "name": "code",
-                      "type": "STRING",
-                      "mode": "NULLABLE"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "license_type",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            }
-          ]
-        },
-        {
-          "name": "vmware_engine_preferences",
-          "type": "RECORD",
-          "mode": "NULLABLE",
-          "fields": [
-            {
-              "name": "cpu_overcommit_ratio",
-              "type": "FLOAT",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "memory_overcommit_ratio",
-              "type": "FLOAT",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "storage_deduplication_compression_ratio",
-              "type": "FLOAT",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "commitment_plan",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            }
-          ]
-        },
-        {
-          "name": "sole_tenancy_preferences",
-          "type": "RECORD",
-          "mode": "NULLABLE",
-          "fields": [
-            {
-              "name": "cpu_overcommit_ratio",
-              "type": "FLOAT",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "host_maintenance_policy",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "commitment_plan",
-              "type": "STRING",
-              "mode": "NULLABLE"
-            },
-            {
-              "name": "node_types",
-              "type": "RECORD",
-              "mode": "REPEATED",
-              "fields": [
-                {
-                  "name": "node_name",
-                  "type": "STRING",
-                  "mode": "NULLABLE"
-                }
-              ]
-            }
-          ]
-        }
+       {
+        "name": "clr_object_count",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       }
       ]
-    }
+     },
+     {
+      "name": "mysql",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "storage_engines",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+         {
+          "name": "engine",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "table_count",
+          "type": "INTEGER",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "encrypted_table_count",
+          "type": "INTEGER",
+          "mode": "NULLABLE"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "name": "postgresql",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "foreign_tables_count",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "postgresql_extensions",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+         {
+          "name": "extension",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "version",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
   ]
-}
+ },
+ {
+  "name": "insight_list",
+  "type": "RECORD",
+  "mode": "NULLABLE",
+  "fields": [
+   {
+    "name": "insights",
+    "type": "RECORD",
+    "mode": "REPEATED",
+    "fields": [
+     {
+      "name": "migration_insight",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "fit",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "fit_level",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         }
+        ]
+       },
+       {
+        "name": "compute_engine_target",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "shape",
+          "type": "RECORD",
+          "mode": "NULLABLE",
+          "fields": [
+           {
+            "name": "memory_mb",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "physical_core_count",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "logical_core_count",
+            "type": "INTEGER",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "series",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "machine_type",
+            "type": "STRING",
+            "mode": "NULLABLE"
+           },
+           {
+            "name": "storage",
+            "type": "RECORD",
+            "mode": "REPEATED",
+            "fields": [
+             {
+              "name": "type",
+              "type": "STRING",
+              "mode": "NULLABLE"
+             },
+             {
+              "name": "size_gb",
+              "type": "INTEGER",
+              "mode": "NULLABLE"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "name": "generic_insight",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "message_id",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "default_message",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "additional_information",
+        "type": "STRING",
+        "mode": "REPEATED"
+       }
+      ]
+     },
+     {
+      "name": "software_insight",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "detected_software",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "software_name",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "software_family",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "update_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+   }
+  ]
+ },
+ {
+  "name": "performance_data",
+  "type": "RECORD",
+  "mode": "NULLABLE",
+  "fields": [
+   {
+    "name": "daily_resource_usage_aggregations",
+    "type": "RECORD",
+    "mode": "REPEATED",
+    "fields": [
+     {
+      "name": "date",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "year",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "month",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       },
+       {
+        "name": "day",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+       }
+      ]
+     },
+     {
+      "name": "cpu",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "utilization_percentage",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "average",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "median",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "nintey_fifth_percentile",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "peak",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "name": "memory",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "utilization_percentage",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "average",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "median",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "nintey_fifth_percentile",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "peak",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "name": "network",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "ingress_bps",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "average",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "median",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "nintey_fifth_percentile",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "peak",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         }
+        ]
+       },
+       {
+        "name": "egress_bps",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "average",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "median",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "nintey_fifth_percentile",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "peak",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "name": "disk",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "iops",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "average",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "median",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "nintey_fifth_percentile",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "peak",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         }
+        ]
+       },
+       {
+        "name": "read_iops",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "average",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "median",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "nintey_fifth_percentile",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "peak",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         }
+        ]
+       },
+       {
+        "name": "write_iops",
+        "type": "RECORD",
+        "mode": "NULLABLE",
+        "fields": [
+         {
+          "name": "average",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "median",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "nintey_fifth_percentile",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         },
+         {
+          "name": "peak",
+          "type": "FLOAT",
+          "mode": "NULLABLE"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sources",
+  "type": "STRING",
+  "mode": "REPEATED"
+ },
+ {
+  "name": "assigned_groups",
+  "type": "STRING",
+  "mode": "REPEATED"
+ }
+],"group_table":[
+ {
+  "name": "name",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "create_time",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "update_time",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "labels",
+  "type": "RECORD",
+  "mode": "REPEATED",
+  "fields": [
+   {
+    "name": "key",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "value",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   }
+  ]
+ },
+ {
+  "name": "display_name",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "description",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ }
+],"preference_set_table":[
+ {
+  "name": "name",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "create_time",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "update_time",
+  "type": "TIMESTAMP",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "display_name",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "description",
+  "type": "STRING",
+  "mode": "NULLABLE"
+ },
+ {
+  "name": "virtual_machine_preferences",
+  "type": "RECORD",
+  "mode": "NULLABLE",
+  "fields": [
+   {
+    "name": "business_goal",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "target_product",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "region_preferences",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "preferred_regions",
+      "type": "STRING",
+      "mode": "REPEATED"
+     }
+    ]
+   },
+   {
+    "name": "commitment_plan",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "sizing_optimization_strategy",
+    "type": "STRING",
+    "mode": "NULLABLE"
+   },
+   {
+    "name": "compute_engine_preferences",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "persistent_disk_type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "machine_preferences",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "allowed_machine_series",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+         {
+          "name": "code",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "name": "license_type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     }
+    ]
+   },
+   {
+    "name": "vmware_engine_preferences",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "cpu_overcommit_ratio",
+      "type": "FLOAT",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "memory_overcommit_ratio",
+      "type": "FLOAT",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "storage_deduplication_compression_ratio",
+      "type": "FLOAT",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "commitment_plan",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "machine_preferences",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+       {
+        "name": "allowed_machine_series",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+         {
+          "name": "code",
+          "type": "STRING",
+          "mode": "NULLABLE"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "sole_tenancy_preferences",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+     {
+      "name": "cpu_overcommit_ratio",
+      "type": "FLOAT",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "host_maintenance_policy",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "commitment_plan",
+      "type": "STRING",
+      "mode": "NULLABLE"
+     },
+     {
+      "name": "node_types",
+      "type": "RECORD",
+      "mode": "REPEATED",
+      "fields": [
+       {
+        "name": "node_name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+]}
