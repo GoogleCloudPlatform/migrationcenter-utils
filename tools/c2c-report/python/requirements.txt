@@ -1,0 +1,11 @@
+pandas
+gspread~=5.7.2
+oauth2client~=4.1.3
+google-api-python-client~=2.76.0
+gspread_formatting~=1.1.2
+google-cloud-bigquery~=3.27.0
+google.cloud~=0.34.0
+google.auth~=2.35.0
+numpy
+urllib3==1.26.6
+pyarrow~=18.1.0
