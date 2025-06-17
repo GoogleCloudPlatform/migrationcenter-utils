@@ -12,26 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-on: [push, pull_request]
-name: linter
+name: Lint
+
+on: # yamllint disable-line rule:truthy
+  push: null
+  pull_request: null
+
+permissions: {}
 
 jobs:
-  lint:
-    strategy:
-      matrix:
-        go-version: [1.x]
-        platform: [ubuntu-latest]
-    runs-on: ${{ matrix.platform }}
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v3
-      with:
-        go-version: ${{ matrix.go-version }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # super-linter needs the full git history to get the
+          # list of files that changed across commits
+          fetch-depth: 0
 
-    - name: golangci-lint
-      uses: golangci/golangci-lint-action@v3
-      with:
-        version: v1.53.2
-        working-directory: tools/mc2bq
-        args: --exclude-use-default
+      - name: Super-linter
+        uses: super-linter/super-linter@v7.4.0 # x-release-please-version
+        env:
+          # To report GitHub Actions status checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
