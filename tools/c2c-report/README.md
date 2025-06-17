@@ -20,7 +20,7 @@ Instructions for installing the Google Cloud SDK can be found in the [Install th
 This application requires Python3 to be installed. Once it is installed, you can install the required Python modules using the included `requirements.txt` file:
 
 ```shell
-$ cd google-mc-c2c-data-import/python
+$ cd c2c-report/python
 $ pip3 install -r requirements.txt
 ```
 #### Using with virtual environment 
@@ -29,7 +29,7 @@ If you wish to run the application inside of a python virtual environment, you c
 
 ```shell
 $ sudo apt install python3.11-venv
-$ cd google-mc-c2c-data-import/python/
+$ cd c2c-report/python/
 $ python3 -m venv ../venv
 $ source ../venv/bin/activate
 (venv) $ pip3 install -r requirements.txt
@@ -38,9 +38,9 @@ $ source ../venv/bin/activate
 Now you can run the python script anytime by switching to the virtual environment:
 
 ```shell
-$ cd google-mc-c2c-data-import/python
+$ cd c2c-report/python
 $ source ../venv/bin/activate
-(venv) $ python google-mc-c2c-data-import.py ....
+(venv) $ python c2c-report.py ....
 ```
 
 ---
@@ -69,9 +69,9 @@ $ gcloud auth application-default login --scopes='https://www.googleapis.com/aut
 ---
 #### Application Arguments
 ```shell 
-$ cd google-mc-c2c-data-import/python
-$ python google-mc-c2c-data-import.py -h
-usage: google-mc-c2c-data-import.py -d <mc report directory>
+$ cd c2c-report/python
+$ python c2c-report.py -h
+usage: c2c-report.py -d <mc report directory>
 This creates an instance mapping between cloud providers and GCP
 
 options:
@@ -96,8 +96,8 @@ options:
 
 
 ```shell 
-$ cd google-mc-c2c-data-import/python
-$  python google-mc-c2c-data-import.py -d ~/mc-test/ -c "Demo Customer, Inc" 
+$ cd c2c-report/python
+$ python c2c-report.py -d ~/mc-test/ -c "Demo Customer, Inc" 
 Migration Center C2C Data Import, v0.2
 Customer: Demo Customer, Inc
 Migration Center Reports directory: /Users/user/mc-test/
@@ -112,8 +112,8 @@ Migration Center Pricing Report for Demo Customer, Inc: https://docs.google.com/
 #### Example Run: Big Query Import with Looker Report
 
 ```shell 
-$ cd google-mc-c2c-data-import/python
-$ python google-mc-c2c-data-import.py -d ~/mc-test/ -c "Demo Customer, Inc" -b -n -l -i project_id.bq_dataset.bg_table_prefix_
+$ cd c2c-report/python
+$ python c2c-report.py -d ~/mc-test/ -c "Demo Customer, Inc" -b -n -l -i project_id.bq_dataset.bg_table_prefix_
 Migration Center C2C Data Import, v0.2
 Customer: Demo Customer, Inc
 Migration Center Reports directory: /home/user/mc-test/
