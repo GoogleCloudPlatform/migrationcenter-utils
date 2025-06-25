@@ -1998,7 +1998,7 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
                     "ID": "identity_LineItemIds"
                 }, inplace=True)
 
-            if file == 'discount':
+            if file == 'credit-and-refund':
                 mc_data[file].rename(columns={
                     "ID": "identity_LineItemIds"
                 }, inplace=True)

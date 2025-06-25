@@ -16,6 +16,7 @@ on: [push, pull_request]
 paths:
       - '**'
       - '!tools/c2c-report/**'
+
 name: tests
 
 jobs:
