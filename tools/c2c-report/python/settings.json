@@ -2,7 +2,7 @@
     "mc_names": {
         "mapped": "GCP Mapped Data (mapped)",
         "unmapped": "AWS Unmapped Data (unmapped)",
-        "discount": "AWS Discounts"
+        "credit-and-refund": "AWS Credit & Refunds"
     },
     "mc_column_names": {
         "mapped": {
@@ -50,7 +50,7 @@
             "Error": "STRING",
             "ErrorMessage": "STRING"
         },
-        "discount": {
+        "credit-and-refund": {
             "identity_LineItemIds": "STRING",
             "lineItem_LineItemType": "STRING",
             "lineItem_ProductCode": "STRING",
