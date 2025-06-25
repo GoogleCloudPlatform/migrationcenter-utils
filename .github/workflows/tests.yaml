@@ -13,9 +13,12 @@
 # limitations under the License.
 
 on: [push, pull_request]
-paths:
+on:
+  push:
+    paths:
       - '**'
       - '!tools/c2c-report/**'
+
 name: tests
 
 jobs:
