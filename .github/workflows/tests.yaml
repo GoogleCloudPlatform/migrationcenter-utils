@@ -13,10 +13,9 @@
 # limitations under the License.
 
 on: [push, pull_request]
-  push:
-    paths:
-      - '**'
-      - '!tools/c2c-report/**'
+  paths:
+    - '**'
+    - '!tools/c2c-report/**'
 
 name: tests
 
