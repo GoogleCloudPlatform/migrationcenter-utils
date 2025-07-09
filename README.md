@@ -7,7 +7,7 @@ Google Cloud Migration Center is a unified migration platform that helps users a
 This repository is broken up into:
 
 * [Tools](/tools)
-  * [c2c-report](/tools/)c2c-report - Migration Center C2C Data Import - Creates Sheets, Looker & BQ resources
+  * [c2c-report](/tools/c2c-report) - Migration Center C2C Data Import - Creates Sheets, Looker & BQ resources
   * [mc2bq](/tools/mc2bq) - Migration Center exported to BigQuery.
   * [mconnect](/tools/mconnect) - Merges information from Google Cloud Migration Center and static code analysis of applications performed by CAST Software to BigQuery for data analysis in Looker Studio
 
