@@ -1513,7 +1513,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         data_row_col = 3  # Unmapped, Column D, lineItem_ProductCode
         data_value_col = 11  # Unmapped, Column L, lineItem_UnblendedCost
         if aws_total_spend[0] == 0:
-            filter_col = "lineItem_ProductCode"
+            filter_col = 3
         else:
             filter_col = None
 
@@ -1550,7 +1550,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         data_row_col_2nd = 5  # Unmapped, Column F, lineItem_UsageType
 
         if aws_total_spend[0] == 0:
-            filter_col = "lineItem_ProductCode"
+            filter_col = 3
         else:
             filter_col = None
 
