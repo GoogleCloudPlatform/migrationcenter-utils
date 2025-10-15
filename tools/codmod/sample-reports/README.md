@@ -1,6 +1,6 @@
 # **CodMod App Modernization Assessment:**   **Report Options**
 
-This document provides a brief overview of the different types of assessment reports that can be generated using the CodMod tool.
+This folder contains sample reports of the different types of assessments that can be generated using the CodMod tool.
 
 ### **1\. Standard Default Report**
 
