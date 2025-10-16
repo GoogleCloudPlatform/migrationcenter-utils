@@ -7,7 +7,7 @@ Google Cloud Migration Center is a unified migration platform that helps users a
 This repository is broken up into:
 
 * [Tools](/tools)
-  * [codmod](/tools/codmod) - GenAI driven Application Modernization assessment - CodMod is an AI-powered CLI tool designed to automate the assessment of existing codebases for cloud transformation readiness.
+  * [codmod](/tools/codmod) - CodMod is an AI-powered CLI tool designed to automate the assessment of existing codebases for cloud transformation readiness.
   * [c2c-report](/tools/c2c-report) - Migration Center C2C Data Import - Creates Sheets, Looker & BQ resources
   * [mc2bq](/tools/mc2bq) - Migration Center exported to BigQuery.
   * [mconnect](/tools/mconnect) - Merges information from Google Cloud Migration Center and static code analysis of applications performed by CAST Software to BigQuery for data analysis in Looker Studio
