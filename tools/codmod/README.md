@@ -1,6 +1,6 @@
 # **CodMod App Modernization Assessment:**   **Report Options**
 
-This document provides a brief overview of the different types of assessment reports that can be generated using the CodMod tool.
+These are examples of the codebase analysis reports produced by CodMod.
 
 ### **1\. Standard Default Report ([Sample report](https://github.com/GoogleCloudPlatform/migrationcenter-utils/blob/f829a6bdccaf9ebe20e17f5efabf3318ff913633/tools/codmod/sample-reports/shopping-cart.html))**
 
