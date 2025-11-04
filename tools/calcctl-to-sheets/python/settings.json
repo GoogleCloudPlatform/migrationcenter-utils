@@ -1,0 +1,190 @@
+{
+    "mc_column_names": {
+        "mapped": {
+            "ID": "STRING",
+            "Item_Type": "STRING",
+            "Account_Or_Subscription": "STRING",
+            "Source_Product": "STRING",
+            "Source_Product_Name": "STRING",
+            "GCP_Service": "STRING",
+            "Description": "STRING",
+            "Region": "STRING",
+            "Source_Shape": "STRING",
+            "Destination_Series": "STRING",
+            "Destination_Shape": "STRING",
+            "Type": "STRING",
+            "Sub_Type_1": "STRING",
+            "Sub_Type_2": "STRING",
+            "vCPUs": "FLOAT64",
+            "Memory_GB": "FLOAT64",
+            "External_Memory_GB": "FLOAT64",
+            "Quantity": "FLOAT64",
+            "Quantity_Type": "STRING",
+            "Source_Cost": "FLOAT64",
+            "Source_Currency": "STRING",
+            "Infra_Cost": "FLOAT64",
+            "OS_Licenses_Cost": "FLOAT64",
+            "GCP_Cost": "FLOAT64",
+            "GCP_Currency": "STRING",
+            "Warning": "STRING",
+            "Warning_Messages": "STRING"
+        },
+        "unmapped": {
+            "identity_LineItemIds": "STRING",
+            "lineItem_LineItemType": "STRING",
+            "lineItem_ProductCode": "STRING",
+            "lineItem_ProductName": "STRING",
+            "lineItem_UsageType": "STRING",
+            "lineItem_Operation": "STRING",
+            "lineItem_ResourceId": "STRING",
+            "lineItem_UsageAmount": "FLOAT64",
+            "lineItem_CurrencyCode": "STRING",
+            "lineItem_UnblendedRate": "FLOAT64",
+            "lineItem_UnblendedCost": "FLOAT64",
+            "lineItem_LineItemDescription": "STRING",
+            "Error": "STRING",
+            "ErrorMessage": "STRING"
+        },
+        "credit-and-refund": {
+            "identity_LineItemIds": "STRING",
+            "lineItem_LineItemType": "STRING",
+            "lineItem_ProductCode": "STRING",
+            "lineItem_ProductName": "STRING",
+            "lineItem_UsageType": "STRING",
+            "lineItem_Operation": "STRING",
+            "lineItem_ResourceId": "STRING",
+            "lineItem_UsageAmount": "FLOAT64",
+            "lineItem_CurrencyCode": "STRING",
+            "lineItem_UnblendedRate": "FLOAT64",
+            "lineItem_UnblendedCost": "FLOAT64",
+            "lineItem_LineItemDescription": "STRING",
+            "Error": "STRING",
+            "ErrorMessage": "STRING"
+        }
+    },
+    "pivot_table_request": {
+        "requests": [
+            {
+                "updateCells": {
+                    "rows": [
+                        {
+                            "values": [
+                                {
+                                    "pivotTable": {
+                                        "dataSourceId": "REPLACE_DATASOURCE",
+                                        "rows": [
+                                            {
+                                                "dataSourceColumnReference": {
+                                                    "name": "REPLACE_REF_COLUMN"
+                                                },
+                                                "sortOrder": "DESCENDING",
+                                                "showTotals": false,
+                                                "valueBucket": {}
+                                            }
+                                        ],
+                                        "filterSpecs": [
+                                            {
+                                                "filterCriteria": {
+                                                    "condition": {
+                                                        "type": "NUMBER_GREATER",
+                                                        "values": [
+                                                            {
+                                                                "userEnteredValue": "0"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "dataSourceColumnReference": {
+                                                    "name": "REPLACE_VALUE_COLUMN"
+                                                }
+                                            }
+                                        ],
+                                        "values": [
+                                            {
+                                                "summarizeFunction": "SUM",
+                                                "dataSourceColumnReference": {
+                                                    "name": "REPLACE_VALUE_COLUMN"
+                                                },
+                                                "name": "Total Cost"
+                                            }
+                                        ],
+                                        "valueLayout": "HORIZONTAL"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "start": {
+                        "sheetId": "REPLACE_SHEET_ID",
+                        "rowIndex": 0,
+                        "columnIndex": 3
+                    },
+                    "fields": "pivotTable"
+                }
+            }
+        ]
+    },
+    "pie_chart_request": {
+        "requests": [
+            {
+                "addChart": {
+                    "chart": {
+                        "spec": {
+                            "title": "CHART_TITLE",
+                            "pieChart": {
+                                "legendPosition": "LABELED_LEGEND",
+                                "domain": {
+                                    "sourceRange": {
+                                        "sources": [
+                                            {
+                                                "sheetId": "SHEET_ID",
+                                                "startRowIndex": 0,
+                                                "startColumnIndex": "START_COL",
+                                                "endColumnIndex": "START_COL +1"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "series": {
+                                    "sourceRange": {
+                                        "sources": [
+                                            {
+                                                "sheetId": "SHEET_ID",
+                                                "startRowIndex": 0,
+                                                "startColumnIndex": "SECOND_COL",
+                                                "endColumnIndex": "SECOND_COL +1"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "threeDimensional": true
+                            }
+                        },
+                        "position": {
+                            "overlayPosition": {
+                                "anchorCell": {
+                                    "sheetId": "SHEET_ID",
+                                    "columnIndex": "LOCATION_COL",
+                                    "rowIndex": "LOCATION_ROW"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "refresh_data_sources": {
+        "requests": [
+            {
+                "refreshDataSource": {
+                    "force": true,
+                    "isAll": true
+                }
+            }
+        ],
+        "includeSpreadsheetInResponse": false,
+        "responseRanges": [],
+        "responseIncludeGridData": false
+    }
+}
