@@ -8,9 +8,10 @@ This repository is broken up into:
 
 * [Tools](/tools)
   * [codmod](/tools/codmod) - CodMod is an AI-powered CLI tool designed to automate the assessment of existing codebases for cloud transformation readiness.
-  * [c2c-report](/tools/c2c-report) - Migration Center C2C Data Import - Creates Sheets, Looker & BQ resources
+  * [c2c-report](/tools/c2c-report) - Migration Center C2C Data Import - Creates Sheets, Looker & BQ resources.
+  * [calcctl-to-sheets](/tools/calcctl-to-sheets) - Migration Center C2C - Creates Sheets based on Calcctl output.  
   * [mc2bq](/tools/mc2bq) - Migration Center exported to BigQuery.
-  * [mconnect](/tools/mconnect) - Merges information from Google Cloud Migration Center and static code analysis of applications performed by CAST Software to BigQuery for data analysis in Looker Studio
+  * [mconnect](/tools/mconnect) - Merges information from Google Cloud Migration Center and static code analysis of applications performed by CAST Software to BigQuery for data analysis in Looker Studio.
 
 ## Contributing
 

@@ -1,0 +1,12 @@
+pandas
+gspread
+oauth2client
+google-api-python-client
+gspread_formatting
+google-cloud-bigquery
+google.cloud
+google.auth
+numpy
+urllib3
+pyarrow
+PyYAML
