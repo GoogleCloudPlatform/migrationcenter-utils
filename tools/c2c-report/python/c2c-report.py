@@ -29,6 +29,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from google.cloud import bigquery
 import google.auth
 from gspread_formatting import *
+from gspread.utils import rowcol_to_a1
 import argparse
 import time
 import os
@@ -51,6 +52,54 @@ f.close()
 
 default_mc_looker_template_id = "421c8150-e7ad-4190-b044-6a18ecdbd391"
 default_cur_looker_template_id = "c4e0ccbc-907a-4bc4-85f1-1711ee47c345"
+
+
+# Check if we should use List Price instead of Actual Cost
+def check_cost_vs_list_price(mc_reports_directory):
+    try:
+        mapped_file = os.path.join(mc_reports_directory, "mapped.csv")
+        unmapped_file = os.path.join(mc_reports_directory, "unmapped.csv")
+
+        if not os.path.exists(mapped_file) or not os.path.exists(unmapped_file):
+            return False
+
+        # Read columns to check existence and values
+        # Use callable for usecols to avoid error if columns are missing
+        mapped_cols_target = ["Source Cost", "Source List Price USD"]
+        unmapped_cols_target = ["lineItem_UnblendedCost", "CalculatedListPrice_USD"]
+
+        # Read data
+        mapped_df = pd.read_csv(mapped_file, usecols=lambda x: x in mapped_cols_target, low_memory=False)
+        unmapped_df = pd.read_csv(unmapped_file, usecols=lambda x: x in unmapped_cols_target, low_memory=False)
+
+        # Check columns presence
+        if not all(col in mapped_df.columns for col in mapped_cols_target):
+            return False
+
+        if not all(col in unmapped_df.columns for col in unmapped_cols_target):
+            return False
+
+        # Check conditions
+        # 1. Both cost columns have only zero values
+        source_cost_zero = (mapped_df["Source Cost"] == 0).all()
+        unblended_cost_zero = (unmapped_df["lineItem_UnblendedCost"] == 0).all()
+
+        if not (source_cost_zero and unblended_cost_zero):
+            return False
+
+        # 2. Either list price column has a nonzero value
+        source_list_nonzero = (mapped_df["Source List Price USD"] != 0).any()
+        calc_list_nonzero = (unmapped_df["CalculatedListPrice_USD"] != 0).any()
+
+        if source_list_nonzero or calc_list_nonzero:
+            print("Actual costs not found. Using List Price columns instead.")
+            return True
+
+        return False
+
+    except Exception as e:
+        print(f"Warning: Could not check for list price usage: {e}")
+        return False
 
 
 # Check number of rows & columns in CSV file
@@ -262,7 +311,7 @@ def generate_pivot_table_request(source, data_source, row_col, value_col, locati
                                  value_name, value_col_2nd, value_name_2nd, filter_col, show_diff, row_col_3rd,
                                  row_name_3rd, row_col_4th, row_name_4th, row_col_5th, row_name_5th, value_col_3rd,
                                  value_name_3rd, value_col_4th, value_name_4th, value_col_5th, value_name_5th,
-                                 row_col_6th, row_name_6th):
+                                 row_col_6th, row_name_6th, source_cost_col_name="Source_Cost"):
     # Google Sheets Pivot Table API: https://developers.google.com/sheets/api/samples/pivot-tables
     f = open('settings.json', )
     template_file = json.load(f)
@@ -448,7 +497,7 @@ def generate_pivot_table_request(source, data_source, row_col, value_col, locati
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
                     2]["name"] = "Cost Difference"
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
-                    2]["formula"] = "=(GCP_Cost - Source_Cost)"
+                    2]["formula"] = f"=(GCP_Cost - {source_cost_col_name})"
 
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"][
                     "values"].append({})
@@ -457,7 +506,7 @@ def generate_pivot_table_request(source, data_source, row_col, value_col, locati
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
                     3]["name"] = "% Difference"
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
-                    3]["formula"] = "=((GCP_Cost - Source_Cost) / Source_Cost)"
+                    3]["formula"] = f"=((GCP_Cost - {source_cost_col_name}) / {source_cost_col_name})"
 
         else:
             new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][0][
@@ -469,14 +518,14 @@ def generate_pivot_table_request(source, data_source, row_col, value_col, locati
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
                     1]["name"] = "Cost Difference"
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
-                    1]["formula"] = "=(GCP_Cost - Source_Cost)"
+                    1]["formula"] = f"=(GCP_Cost - {source_cost_col_name})"
 
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
                     2]["summarizeFunction"] = "SUM"
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
                     2]["name"] = "% Difference"
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
-                    2]["formula"] = "=((GCP_Cost - Source_Cost) / Source_Cost)"
+                    2]["formula"] = f"=((GCP_Cost - {source_cost_col_name}) / {source_cost_col_name})"
 
         if filter_col is None:
             new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["filterSpecs"][
@@ -729,7 +778,20 @@ def generate_pivot_table_request(source, data_source, row_col, value_col, locati
     return new_pivot_table_request
 
 
-def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_source, unmapped_data_worksheet):
+def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_source, unmapped_data_worksheet, use_list_price=False):
+    if use_list_price:
+        aws_cost_title = "AWS List Price (actual costs not available)"
+        mapped_cost_col_bq = "Source_List_Price_USD"
+        mapped_cost_col_csv = "Source List Price USD"
+        unmapped_cost_col_bq = "CalculatedListPrice_USD"
+        unmapped_cost_col_csv = "CalculatedListPrice_USD"
+    else:
+        aws_cost_title = "AWS Cost"
+        mapped_cost_col_bq = "Source_Cost"
+        mapped_cost_col_csv = "Source Cost"
+        unmapped_cost_col_bq = "lineItem_UnblendedCost"
+        unmapped_cost_col_csv = "lineItem_UnblendedCost"
+
     exec_overview_worksheets_name = "Executive Overview"
     gcp_overview_worksheets_name = "GCP Detailed Overview"
     unmapped_worksheets_name = "AWS Unmapped Overview"
@@ -764,9 +826,13 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
     # db_overview_worksheet_id = db_overview_worksheet._properties['sheetId']
 
     if data_source_type == "BQ":
-        unmapped_data_column_formula = f"=SUM(\'{unmapped_data_worksheet}\'!lineItem_UnblendedCost)"
+        unmapped_data_column_formula = f"=SUM(\'{unmapped_data_worksheet}\'!{unmapped_cost_col_bq})"
     elif data_source_type == "SHEETS":
-        unmapped_data_column_formula = f"=SUM(\'{unmapped_data_worksheet}\'!L2:L)"
+        # Determine column letter for unmapped cost
+        col_idx = data_source["unmapped"]["columns"][unmapped_cost_col_csv]
+        col_letter = rowcol_to_a1(1, col_idx + 1)
+        col_letter = "".join(filter(str.isalpha, col_letter))
+        unmapped_data_column_formula = f"=SUM(\'{unmapped_data_worksheet}\'!{col_letter}2:{col_letter})"
 
     exec_overview_worksheet.batch_update([
         {
@@ -909,19 +975,19 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
     if data_source_type == "BQ":
         data_source_id = [data_source[0]]
         data_row_col = "GCP_Service"
-        data_value_col = "Source_Cost"
+        data_value_col = mapped_cost_col_bq
         data_value_2nd_col = "GCP_Cost"
-        filter_column = "Source_Cost"
+        filter_column = mapped_cost_col_bq
     elif data_source_type == "SHEETS":
         mapped_cols = data_source["mapped"]["columns"]
         data_source_id = [data_source["mapped"]["worksheet_id"].id, data_source["mapped"]["csv_header_length"],
                           data_source["mapped"]["csv_num_rows"]]
         data_row_col = mapped_cols["GCP Service"]
-        data_value_col = mapped_cols["Source Cost"]
+        data_value_col = mapped_cols[mapped_cost_col_csv]
         data_value_2nd_col = mapped_cols["GCP Cost"]
-        filter_column = mapped_cols["Source Cost"]
+        filter_column = mapped_cols[mapped_cost_col_csv]
 
-    value_name = "AWS Cost"
+    value_name = aws_cost_title
     value_name_2nd = "GCP Cost"
 
     response = spreadsheet.batch_update(
@@ -930,7 +996,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
                                      pivot_table_location, "SUM", None, None, None, value_name,
                                      data_value_2nd_col,
                                      value_name_2nd, filter_column, False, None, None, None, None, None, None, None,
-                                     None, None, None, None, None, None, None
+                                     None, None, None, None, None, None, None, mapped_cost_col_bq
                                      ),
 
     )
@@ -963,8 +1029,8 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
                                      gcp_overview_worksheet_id,
                                      pivot_table_location, "SUM", None, data_row_col_2nd, None, "GCP Cost", None, None,
                                      filter_column,
-                                     False, None, None, None, None, None, None, None, None, None, None, None, None,
-                                     None, None
+                                     False, None, None, None, None, None, None, None, None, None, None, None,
+                                     None, None, mapped_cost_col_bq
                                      ))
 
     # Add Instance Cost to Overview Worksheet. Filter on Destination_Shape column being not None.
@@ -994,7 +1060,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
                                      gcp_overview_worksheet_id,
                                      pivot_table_location, "SUM", None, data_row_col_2nd, None, "GCP Cost", None, None,
                                      filter_col, False, None, None, None, None, None, None, None, None, None, None,
-                                     None, None, None, None
+                                     None, None, None, None, mapped_cost_col_bq
                                      ))
 
     # Exec Overview Pivot Table
@@ -1012,23 +1078,23 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
     # data_row_col_name = "Source_Product"
     # data_value_col_name = "Source_Cost"
     # data_value_2nd_col_name = "GCP_Cost"
-    value_name = "AWS Cost"
+    value_name = aws_cost_title
     value_name_2nd = "GCP Cost"
 
     if data_source_type == "BQ":
         data_source_id = [data_source[0]]
         data_row_col = "Source_Product"
-        data_value_col = "Source_Cost"
+        data_value_col = mapped_cost_col_bq
         data_row_col_2nd = "GCP_Cost"
-        filter_column = "Source_Cost"
+        filter_column = mapped_cost_col_bq
     elif data_source_type == "SHEETS":
         mapped_cols = data_source["mapped"]["columns"]
         data_source_id = [data_source["mapped"]["worksheet_id"].id, data_source["mapped"]["csv_header_length"],
                           data_source["mapped"]["csv_num_rows"]]
         data_row_col = mapped_cols["Source Product"]
-        data_value_col = mapped_cols["Source Cost"]
+        data_value_col = mapped_cols[mapped_cost_col_csv]
         data_row_col_2nd = mapped_cols["GCP Cost"]
-        filter_column = mapped_cols["Source Cost"]
+        filter_column = mapped_cols[mapped_cost_col_csv]
 
     response = spreadsheet.batch_update(
         generate_pivot_table_request(data_source_type, data_source_id, data_row_col, data_value_col,
@@ -1036,7 +1102,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
                                      pivot_table_location, "SUM", None, None, None, value_name,
                                      data_row_col_2nd,
                                      value_name_2nd, filter_column, False, None, None, None, None, None, None, None,
-                                     None, None, None, None, None, None, None
+                                     None, None, None, None, None, None, None, mapped_cost_col_bq
                                      ),
 
     )
@@ -1101,7 +1167,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         data_row_col_6th = "Description"
 
         data_value_col = "Quantity"
-        data_value_2nd_col = "Source_Cost"
+        data_value_2nd_col = mapped_cost_col_bq
         data_value_3rd_col = "Infra_Cost"
         data_value_4th_col = "OS_Licenses_Cost"
         data_value_5th_col = "GCP_Cost"
@@ -1118,7 +1184,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         data_row_col_5th = mapped_cols["Memory (GB)"]
         data_row_col_6th = mapped_cols["Description"]
         data_value_col = mapped_cols["Quantity"]
-        data_value_2nd_col = mapped_cols["Source Cost"]
+        data_value_2nd_col = mapped_cols[mapped_cost_col_csv]
         data_value_3rd_col = mapped_cols["Infra Cost"]
         data_value_4th_col = mapped_cols["OS Licenses Cost"]
         data_value_5th_col = mapped_cols["GCP Cost"]
@@ -1126,7 +1192,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         filter_column = "CONTAINS"
 
     value_name = "Usage (Hourly)"
-    value_name_2nd = "AWS Cost"
+    value_name_2nd = aws_cost_title
     value_name_3rd = "Machine Type Cost"
     value_name_4th = "OS Licenses Cost"
     value_name_5th = "Total GCP Cost"
@@ -1139,7 +1205,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
                                      value_name_2nd, filter_column, False, data_row_col_3rd, None, data_row_col_4th,
                                      None, data_row_col_5th, None, data_value_3rd_col,
                                      value_name_3rd, data_value_4th_col, value_name_4th, data_value_5th_col,
-                                     value_name_5th, data_row_col_6th, None
+                                     value_name_5th, data_row_col_6th, None, mapped_cost_col_bq
                                      ),
 
     )
@@ -1508,7 +1574,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
     if data_source_type == "BQ":
         data_source_id = [data_source[1]]
         data_row_col = "lineItem_ProductCode"
-        data_value_col = "lineItem_UnblendedCost"
+        data_value_col = unmapped_cost_col_bq
         if aws_total_spend[0] == 0:
             filter_col = "lineItem_ProductCode"
         else:
@@ -1518,7 +1584,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         data_source_id = [data_source["unmapped"]["worksheet_id"].id, data_source["unmapped"]["csv_header_length"],
                           data_source["unmapped"]["csv_num_rows"]]
         data_row_col = unmapped_cols["lineItem_ProductCode"]
-        data_value_col = unmapped_cols["lineItem_UnblendedCost"]
+        data_value_col = unmapped_cols[unmapped_cost_col_csv]
         if aws_total_spend[0] == 0:
             filter_col = unmapped_cols["lineItem_ProductCode"]
         else:
@@ -1532,16 +1598,16 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
     response = spreadsheet.batch_update(
         generate_pivot_table_request(data_source_type, data_source_id, data_row_col, data_value_col,
                                      unmapped_worksheet_id,
-                                     pivot_table_location, "SUM", None, None, None, "AWS Cost", None, None, filter_col,
+                                     pivot_table_location, "SUM", None, None, None, aws_cost_title, None, None, filter_col,
                                      False,
-                                     None, None, None, None, None, None, None, None, None, None, None, None, None, None
+                                     None, None, None, None, None, None, None, None, None, None, None, None, None, None, mapped_cost_col_bq
                                      ))
 
     # Add Instance Region Usage Breakdown.
     if data_source_type == "BQ":
         data_source_id = [data_source[1]]
         data_row_col = "lineItem_ProductCode"
-        data_value_col = "lineItem_UnblendedCost"
+        data_value_col = unmapped_cost_col_bq
         data_row_col_2nd = "lineItem_UsageType"
 
         if aws_total_spend[0] == 0:
@@ -1554,7 +1620,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         data_source_id = [data_source["unmapped"]["worksheet_id"].id, data_source["unmapped"]["csv_header_length"],
                           data_source["unmapped"]["csv_num_rows"]]
         data_row_col = unmapped_cols["lineItem_ProductCode"]
-        data_value_col = unmapped_cols["lineItem_UnblendedCost"]
+        data_value_col = unmapped_cols[unmapped_cost_col_csv]
         data_row_col_2nd = unmapped_cols["lineItem_UsageType"]
 
         if aws_total_spend[0] == 0:
@@ -1570,9 +1636,9 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
     response = spreadsheet.batch_update(
         generate_pivot_table_request(data_source_type, data_source_id, data_row_col, data_value_col,
                                      unmapped_worksheet_id,
-                                     pivot_table_location, "SUM", None, data_row_col_2nd, None, "AWS Cost", None, None,
+                                     pivot_table_location, "SUM", None, data_row_col_2nd, None, aws_cost_title, None, None,
                                      filter_col, False, None, None, None, None, None, None, None, None, None, None, None,
-                                     None, None, None
+                                     None, None, None, mapped_cost_col_bq
                                      ))
 
     # Add Piechart for AWS Unmapped Services
@@ -2257,6 +2323,8 @@ def main():
         print("Migration Center Reports directory not defined, exiting!")
         exit()
 
+    use_list_price = check_cost_vs_list_price(mc_reports_directory)
+
     if connect_sheets_bq is True and (
             enable_bq_import is False and enable_cur_import is False and do_not_import_data is False):
         print("Must enable Big Query with -b or -a before creating a Connected BQ Google Sheets!")
@@ -2292,7 +2360,7 @@ def main():
         # worksheet_names = [mc_names["mapped"], mc_names["unmapped"]]
         worksheet_names = []
         data_source = import_mc_data_sheets(mc_reports_directory, spreadsheet, credentials)
-        generate_mc_sheets(spreadsheet, worksheet_names, "SHEETS", data_source, mc_names["unmapped"])
+        generate_mc_sheets(spreadsheet, worksheet_names, "SHEETS", data_source, mc_names["unmapped"], use_list_price)
 
         spreadsheet_url = 'https://docs.google.com/spreadsheets/d/%s' % spreadsheet.id
 
@@ -2413,7 +2481,7 @@ def main():
 
             # pivot_table_location = [0, 0]
             if enable_bq_import is True:
-                generate_mc_sheets(spreadsheet, worksheet_names, "BQ", data_source_ids, unmapped_worksheet_name)
+                generate_mc_sheets(spreadsheet, worksheet_names, "BQ", data_source_ids, unmapped_worksheet_name, use_list_price)
 
             if enable_cur_import is True:
                 generate_bq_cur_sheets(spreadsheet, worksheet_names, data_source_ids)
