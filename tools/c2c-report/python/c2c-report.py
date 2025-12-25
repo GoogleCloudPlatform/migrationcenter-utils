@@ -913,12 +913,13 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         data_value_2nd_col = "GCP_Cost"
         filter_column = "Source_Cost"
     elif data_source_type == "SHEETS":
+        mapped_cols = data_source["mapped"]["columns"]
         data_source_id = [data_source["mapped"]["worksheet_id"].id, data_source["mapped"]["csv_header_length"],
                           data_source["mapped"]["csv_num_rows"]]
-        data_row_col = 5  # Data, Column F, GCP_Service
-        data_value_col = 19  # Data, Column X, Source_Cost
-        data_value_2nd_col = 23  # Data, Column T, GCP_Cost
-        filter_column = 19  # Data, Column T, Source_Cost
+        data_row_col = mapped_cols["GCP Service"]
+        data_value_col = mapped_cols["Source Cost"]
+        data_value_2nd_col = mapped_cols["GCP Cost"]
+        filter_column = mapped_cols["Source Cost"]
 
     value_name = "AWS Cost"
     value_name_2nd = "GCP Cost"
@@ -948,12 +949,13 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         filter_column = "Region"
 
     elif data_source_type == "SHEETS":
+        mapped_cols = data_source["mapped"]["columns"]
         data_source_id = [data_source["mapped"]["worksheet_id"].id, data_source["mapped"]["csv_header_length"],
                           data_source["mapped"]["csv_num_rows"]]
-        data_row_col = 7  # Data, Column H, Region
-        data_row_col_2nd = 5  # Data, Column F, GCP_Service
-        data_value_col = 23  # Data, Column X, GCP Cost
-        filter_column = 7  # Data, Column H, Region
+        data_row_col = mapped_cols["Region"]
+        data_row_col_2nd = mapped_cols["GCP Service"]
+        data_value_col = mapped_cols["GCP Cost"]
+        filter_column = mapped_cols["Region"]
 
     # Add Instance Region Cost
     response = spreadsheet.batch_update(
@@ -979,12 +981,13 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         filter_col = "Destination_Shape"
 
     elif data_source_type == "SHEETS":
+        mapped_cols = data_source["mapped"]["columns"]
         data_source_id = [data_source["mapped"]["worksheet_id"].id, data_source["mapped"]["csv_header_length"],
                           data_source["mapped"]["csv_num_rows"]]
-        data_row_col = 7  # Data, Column H, Region
-        data_value_col = 23  # Data, Column X, GCP Cost
-        data_row_col_2nd = 10  # Data, Column K, Destination Shape
-        filter_col = 10  # Data, Column K, Destination Shape
+        data_row_col = mapped_cols["Region"]
+        data_value_col = mapped_cols["GCP Cost"]
+        data_row_col_2nd = mapped_cols["Destination Shape"]
+        filter_col = mapped_cols["Destination Shape"]
 
     response = spreadsheet.batch_update(
         generate_pivot_table_request(data_source_type, data_source_id, data_row_col, data_value_col,
@@ -1019,12 +1022,13 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         data_row_col_2nd = "GCP_Cost"
         filter_column = "Source_Cost"
     elif data_source_type == "SHEETS":
+        mapped_cols = data_source["mapped"]["columns"]
         data_source_id = [data_source["mapped"]["worksheet_id"].id, data_source["mapped"]["csv_header_length"],
                           data_source["mapped"]["csv_num_rows"]]
-        data_row_col = 3  # Data, Column D, Source_Product
-        data_value_col = 19  # Data, Column T, Source_Cost
-        data_row_col_2nd = 23  # Data, Column K, GCP_Cost
-        filter_column = 19  # Data, Column T, Source_Cost
+        data_row_col = mapped_cols["Source Product"]
+        data_value_col = mapped_cols["Source Cost"]
+        data_row_col_2nd = mapped_cols["GCP Cost"]
+        filter_column = mapped_cols["Source Cost"]
 
     response = spreadsheet.batch_update(
         generate_pivot_table_request(data_source_type, data_source_id, data_row_col, data_value_col,
@@ -1054,16 +1058,17 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
 
         filter_column = "GCP_Service"
     elif data_source_type == "SHEETS":
+        mapped_cols = data_source["mapped"]["columns"]
         data_source_id = [data_source["mapped"]["worksheet_id"].id, data_source["mapped"]["csv_header_length"],
                           data_source["mapped"]["csv_num_rows"]]
-        data_row_col = 5  # Data, Column F, GCP_Service
-        data_row_col_2nd = 8  # Data, Column I, Destination_Series
-        data_row_col_3rd = 6  # Data, Column G, Description
-        data_value_col = 22  # Data, Column W, OS_Licenses_Cost
-        data_value_col_2nd = 21  # Data, Column V, Infra_Cost
-        data_value_col_3rd = 23  # Data, Column X, GCP_Cost
+        data_row_col = mapped_cols["GCP Service"]
+        data_row_col_2nd = mapped_cols["Destination Series"]
+        data_row_col_3rd = mapped_cols["Description"]
+        data_value_col = mapped_cols["OS Licenses Cost"]
+        data_value_col_2nd = mapped_cols["Infra Cost"]
+        data_value_col_3rd = mapped_cols["GCP Cost"]
 
-        filter_column = 5  # Data, Column F, GCP_Service
+        filter_column = mapped_cols["GCP Service"]
 
     value_name = "License Cost"
     value_name_2nd = "Infra Cost"
@@ -1103,19 +1108,20 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
 
         filter_column = "CONTAINS"
     elif data_source_type == "SHEETS":
+        mapped_cols = data_source["mapped"]["columns"]
         data_source_id = [data_source["mapped"]["worksheet_id"].id, data_source["mapped"]["csv_header_length"],
                           data_source["mapped"]["csv_num_rows"]]
-        data_row_col = 7  # Data, Column H, Region
-        data_row_col_2nd = 8  # Data, Column I, Source_Shape
-        data_row_col_3rd = 10  # Data, Column K, Destination_Shape
-        data_row_col_4th = 14  # Data, Column O, vCPUs
-        data_row_col_5th = 15  # Data, Column P, Memory_GB
-        data_row_col_6th = 6  # Data, Column G, Description
-        data_value_col = 17  # Data, Column R, Quantity
-        data_value_2nd_col = 19  # Data, Column T, Source_Cost
-        data_value_3rd_col = 21  # Data, Column V, Infra_Cost
-        data_value_4th_col = 22  # Data, Column X, OS_Licenses_Cost
-        data_value_5th_col = 23  # Data, Column Y, GCP_Cost
+        data_row_col = mapped_cols["Region"]
+        data_row_col_2nd = mapped_cols["Source Shape"]
+        data_row_col_3rd = mapped_cols["Destination Shape"]
+        data_row_col_4th = mapped_cols["vCPUs"]
+        data_row_col_5th = mapped_cols["Memory (GB)"]
+        data_row_col_6th = mapped_cols["Description"]
+        data_value_col = mapped_cols["Quantity"]
+        data_value_2nd_col = mapped_cols["Source Cost"]
+        data_value_3rd_col = mapped_cols["Infra Cost"]
+        data_value_4th_col = mapped_cols["OS Licenses Cost"]
+        data_value_5th_col = mapped_cols["GCP Cost"]
 
         filter_column = "CONTAINS"
 
@@ -1508,12 +1514,13 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         else:
             filter_col = None
     elif data_source_type == "SHEETS":
+        unmapped_cols = data_source["unmapped"]["columns"]
         data_source_id = [data_source["unmapped"]["worksheet_id"].id, data_source["unmapped"]["csv_header_length"],
                           data_source["unmapped"]["csv_num_rows"]]
-        data_row_col = 3  # Unmapped, Column D, lineItem_ProductCode
-        data_value_col = 11  # Unmapped, Column L, lineItem_UnblendedCost
+        data_row_col = unmapped_cols["lineItem_ProductCode"]
+        data_value_col = unmapped_cols["lineItem_UnblendedCost"]
         if aws_total_spend[0] == 0:
-            filter_col = 3
+            filter_col = unmapped_cols["lineItem_ProductCode"]
         else:
             filter_col = None
 
@@ -1543,14 +1550,15 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
             filter_col = None
 
     elif data_source_type == "SHEETS":
+        unmapped_cols = data_source["unmapped"]["columns"]
         data_source_id = [data_source["unmapped"]["worksheet_id"].id, data_source["unmapped"]["csv_header_length"],
                           data_source["unmapped"]["csv_num_rows"]]
-        data_row_col = 3  # Unmapped, Column D, lineItem_ProductCode
-        data_value_col = 11  # Unmapped, Column L, lineItem_UnblendedCost
-        data_row_col_2nd = 5  # Unmapped, Column F, lineItem_UsageType
+        data_row_col = unmapped_cols["lineItem_ProductCode"]
+        data_value_col = unmapped_cols["lineItem_UnblendedCost"]
+        data_row_col_2nd = unmapped_cols["lineItem_UsageType"]
 
         if aws_total_spend[0] == 0:
-            filter_col = 3
+            filter_col = unmapped_cols["lineItem_ProductCode"]
         else:
             filter_col = None
 
@@ -1866,13 +1874,15 @@ def import_mc_data_sheets(mc_reports_directory, spreadsheet, credentials):
     data_source = {
         "mapped": {
             "worksheet_id": sh.worksheet(mc_names["mapped"]),
-            "csv_header_length": 25 + 1,
-            "csv_num_rows": len(mc_data["mapped"]) + 1
+            "csv_header_length": len(mc_data["mapped"].columns),
+            "csv_num_rows": len(mc_data["mapped"]) + 1,
+            "columns": {col: idx for idx, col in enumerate(mc_data["mapped"].columns)}
         },
         "unmapped": {
             "worksheet_id": sh.worksheet(mc_names["unmapped"]),
-            "csv_header_length": 25 + 1,
-            "csv_num_rows": len(mc_data["unmapped"]) + 1
+            "csv_header_length": len(mc_data["unmapped"].columns),
+            "csv_num_rows": len(mc_data["unmapped"]) + 1,
+            "columns": {col: idx for idx, col in enumerate(mc_data["unmapped"].columns)}
         },
 
     }
