@@ -1495,7 +1495,7 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
 
     # Get AWS Unmapped Totals
     from gspread.utils import ValueRenderOption
-    aws_total_spend_array = gcp_overview_worksheet.get("B3", value_render_option=ValueRenderOption.unformatted)
+    aws_total_spend_array = exec_overview_worksheet.get("B3", value_render_option=ValueRenderOption.unformatted)
     aws_total_spend = aws_total_spend_array[0]
 
     # Add Cost sums to AWS Unmapped Worksheet. Filter on AWS Cost column being greater than 0.
