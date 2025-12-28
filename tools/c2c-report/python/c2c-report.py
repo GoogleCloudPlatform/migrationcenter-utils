@@ -2009,6 +2009,9 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
             # More ensuring the various MC & CUR import versions have the same column names
             mc_data[file].rename(columns=lambda x: x.replace("product_", "lineItem_"), inplace=True)
 
+            # Strip any non-alphanumeric characters from column names
+            mc_data[file].rename(columns=lambda x: "".join(e for e in x if e.isalnum() or e == "_"), inplace=True)
+
             schema = []
             # Create Schema Fields for BQ
             for column in mc_column_names[file].keys():
@@ -2118,6 +2121,7 @@ def import_cur_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq
             # Ensure no spaces exist in any column names
             cur_data[file].rename(columns=lambda x: x.replace(" ", "_"), inplace=True)
             cur_data[file].rename(columns=lambda x: x.replace("/", "_"), inplace=True)
+            cur_data[file].rename(columns=lambda x: "".join(e for e in x if e.isalnum() or e == "_"), inplace=True)
 
             job_config = bigquery.LoadJobConfig(
 
@@ -2127,7 +2131,7 @@ def import_cur_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq
                 create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED,
                 column_name_character_map="V2",
                 allow_quoted_newlines=True,
-                #schema=schema,
+                schema_update_options=[bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION],
                 source_format=bigquery.SourceFormat.CSV
             )
 
