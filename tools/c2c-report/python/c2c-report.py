@@ -509,6 +509,10 @@ def generate_pivot_table_request(source, data_source, row_col, value_col, locati
                     3]["formula"] = f"=((GCP_Cost - {source_cost_col_name}) / {source_cost_col_name})"
 
         else:
+            if value_name is not None:
+                new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
+                    0]["name"] = value_name
+
             new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][0][
                 "dataSourceColumnReference"]["name"] = value_col
 
@@ -2098,7 +2102,6 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
             job_config = bigquery.LoadJobConfig(
 
                 autodetect=True,
-                skip_leading_rows=1,
                 write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
                 create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED,
                 column_name_character_map="V2",
