@@ -305,13 +305,69 @@ def generate_protect_sheet_request(sheet_id):
     return body
 
 
+
+def generate_merge_cells_request(sheet_id, start_row, end_row, start_col, end_col):
+    body = {
+        "requests": [
+            {
+                "mergeCells": {
+                    "range": {
+                        "sheetId": sheet_id,
+                        "startRowIndex": start_row,
+                        "endRowIndex": end_row,
+                        "startColumnIndex": start_col,
+                        "endColumnIndex": end_col
+                    },
+                    "mergeType": "MERGE_ALL"
+                }
+            }
+        ]
+    }
+    return body
+
+
+def generate_update_cell_request(sheet_id, row, col, value):
+    body = {
+        "requests": [
+            {
+                "updateCells": {
+                    "rows": [
+                        {
+                            "values": [
+                                {
+                                    "userEnteredValue": {
+                                        "stringValue": value
+                                    },
+                                    "userEnteredFormat": {
+                                        "horizontalAlignment": "CENTER",
+                                        "textFormat": {
+                                            "bold": True
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "fields": "userEnteredValue,userEnteredFormat.textFormat.bold,userEnteredFormat.horizontalAlignment",
+                    "start": {
+                        "sheetId": sheet_id,
+                        "rowIndex": row,
+                        "columnIndex": col
+                    }
+                }
+            }
+        ]
+    }
+    return body
+
+
 # Create Pivot table with sums for Google Sheets
 def generate_pivot_table_request(source, data_source, row_col, value_col, location_spreadsheet,
                                  pivot_table_location, summarize_function, row_name, row_col_2nd, row_name_2nd,
                                  value_name, value_col_2nd, value_name_2nd, filter_col, show_diff, row_col_3rd,
                                  row_name_3rd, row_col_4th, row_name_4th, row_col_5th, row_name_5th, value_col_3rd,
                                  value_name_3rd, value_col_4th, value_name_4th, value_col_5th, value_name_5th,
-                                 row_col_6th, row_name_6th, source_cost_col_name="Source_Cost"):
+                                 row_col_6th, row_name_6th, source_cost_col_name="Source_Cost", sort_by_value_index=None):
     # Google Sheets Pivot Table API: https://developers.google.com/sheets/api/samples/pivot-tables
     f = open('settings.json', )
     template_file = json.load(f)
@@ -516,6 +572,14 @@ def generate_pivot_table_request(source, data_source, row_col, value_col, locati
             new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][0][
                 "dataSourceColumnReference"]["name"] = value_col
 
+            if value_name is not None:
+                new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
+                    0]["name"] = value_name
+
+            if summarize_function is not None:
+                new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
+                    0]["summarizeFunction"] = summarize_function
+
             if show_diff is True:
                 new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["values"][
                     1]["summarizeFunction"] = "SUM"
@@ -638,8 +702,12 @@ def generate_pivot_table_request(source, data_source, row_col, value_col, locati
             "showTotals"] = False
         new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["rows"][0][
             "sortOrder"] = "DESCENDING"
-        new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["rows"][0][
-            "valueBucket"] = {}
+        if sort_by_value_index is not None:
+            new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["rows"][0][
+                "valueBucket"] = {"valuesIndex": sort_by_value_index}
+        else:
+            new_pivot_table_request["requests"][0]["updateCells"]["rows"][0]["values"][0]["pivotTable"]["rows"][0][
+                "valueBucket"] = {}
 
         # If defined, add a 2nd column source for the Pivot Table
         if row_col_2nd is not None:
@@ -800,26 +868,31 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
     gcp_overview_worksheets_name = "GCP Detailed Overview"
     unmapped_worksheets_name = "AWS Unmapped Overview"
     gcp_discounts_worksheets_name = "GCP Discounts"
+    errors_warnings_worksheet_name = "Errors and Warnings"
 
     # Create Executive Overview Worksheet in Sheets
-    exec_overview_worksheet = spreadsheet.add_worksheet(exec_overview_worksheets_name, 60, 25)
+    exec_overview_worksheet = spreadsheet.add_worksheet(exec_overview_worksheets_name, 60, 25, index=0)
     exec_overview_worksheet_id = exec_overview_worksheet._properties['sheetId']
 
     # Create GCP Overview Worksheet in Sheets
-    gcp_overview_worksheet = spreadsheet.add_worksheet(gcp_overview_worksheets_name, 125, 25)
+    gcp_overview_worksheet = spreadsheet.add_worksheet(gcp_overview_worksheets_name, 125, 25, index=1)
     gcp_overview_worksheet_id = gcp_overview_worksheet._properties['sheetId']
 
     # Create AWS Unmapped Worksheet in Sheets
-    unmapped_worksheet = spreadsheet.add_worksheet(unmapped_worksheets_name, 60, 25)
+    unmapped_worksheet = spreadsheet.add_worksheet(unmapped_worksheets_name, 60, 25, index=2)
     unmapped_worksheet_id = unmapped_worksheet._properties['sheetId']
 
     # Create GCP Discounts Worksheet in Sheets
-    gcp_discounts_worksheet = spreadsheet.add_worksheet(gcp_discounts_worksheets_name, 300, 25)
+    gcp_discounts_worksheet = spreadsheet.add_worksheet(gcp_discounts_worksheets_name, 300, 25, index=3)
     gcp_discounts_worksheet_id = gcp_discounts_worksheet._properties['sheetId']
 
     # Create Machine Type Overview Worksheet in Sheets
-    mt_overview_worksheet = spreadsheet.add_worksheet("Machine Type Overview", 300, 25)
+    mt_overview_worksheet = spreadsheet.add_worksheet("Machine Type Overview", 300, 25, index=4)
     mt_overview_worksheet_id = mt_overview_worksheet._properties['sheetId']
+
+    # Create Errors and Warnings Worksheet in Sheets
+    errors_warnings_worksheet = spreadsheet.add_worksheet(errors_warnings_worksheet_name, 300, 25, index=5)
+    errors_warnings_worksheet_id = errors_warnings_worksheet._properties['sheetId']
 
     # Create Storage Overview Worksheet in Sheets - CURRENTLY DISABLED
     # storage_overview_worksheet = spreadsheet.add_worksheet("Storage Overview", 60, 25)
@@ -1268,6 +1341,63 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
     res = spreadsheet.batch_update(
         generate_pie_table_request(gcp_overview_worksheet_id, chart_title, piechart_row_col, piechart_value_col,
                                    position_data))
+
+    pivot_table_location = [0, 1]
+
+    if data_source_type == "BQ":
+        data_source_id = [data_source[1]]
+        data_row_col = "ErrorMessage"
+        data_value_col = "identity_LineItemIds"
+    elif data_source_type == "SHEETS":
+        unmapped_cols = data_source["unmapped"]["columns"]
+        data_source_id = [data_source["unmapped"]["worksheet_id"].id, data_source["unmapped"]["csv_header_length"],
+                          data_source["unmapped"]["csv_num_rows"]]
+        data_row_col = unmapped_cols.get("ErrorMessage", unmapped_cols.get("Error", 0))
+        data_value_col = unmapped_cols.get("ID", 0)
+
+    # Filter out empty errors
+    filter_col = data_row_col
+
+    # Add Errors Header
+    spreadsheet.batch_update(generate_merge_cells_request(errors_warnings_worksheet_id, 0, 1, 0, 2))
+    spreadsheet.batch_update(generate_update_cell_request(errors_warnings_worksheet_id, 0, 0, "Errors (Unmapped)"))
+
+    spreadsheet.batch_update(generate_pivot_table_request(data_source_type, data_source_id, data_row_col, data_value_col,
+                                     errors_warnings_worksheet_id,
+                                     pivot_table_location, "COUNTA", "Errors", None, None, "Total",
+                                     None, None, filter_col, False, None, None, None, None, None, None, None,
+                                     None, None, None, None, None, None, None, None,
+                                     sort_by_value_index=0
+                                     ))
+
+    pivot_table_location = [3, 1]
+
+    if data_source_type == "BQ":
+        data_source_id = [data_source[0]]
+        data_row_col = "Warning_Messages"
+        data_value_col = "ID"
+    elif data_source_type == "SHEETS":
+        mapped_cols = data_source["mapped"]["columns"]
+        data_source_id = [data_source["mapped"]["worksheet_id"].id, data_source["mapped"]["csv_header_length"],
+                          data_source["mapped"]["csv_num_rows"]]
+        data_row_col = mapped_cols.get("Warning Messages", mapped_cols.get("Warning", 0))
+        data_value_col = mapped_cols.get("ID", 0)
+
+    # Filter out empty warnings
+    filter_col = data_row_col
+
+    # Add Warnings Header
+    spreadsheet.batch_update(generate_merge_cells_request(errors_warnings_worksheet_id, 0, 1, 3, 5))
+    spreadsheet.batch_update(generate_update_cell_request(errors_warnings_worksheet_id, 0, 3, "Warnings (Mapped)"))
+
+    spreadsheet.batch_update(
+        generate_pivot_table_request(data_source_type, data_source_id, data_row_col, data_value_col,
+                                     errors_warnings_worksheet_id,
+                                     pivot_table_location, "COUNTA", "Warnings", None, None, "Total",
+                                     None, None, filter_col, False, None, None, None, None, None, None, None,
+                                     None, None, None, None, None, None, None, None,
+                                     sort_by_value_index=0
+                                     ))
 
     exec_overview_formats = [
         {
