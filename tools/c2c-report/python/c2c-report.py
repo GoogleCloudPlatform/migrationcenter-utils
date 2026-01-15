@@ -2230,8 +2230,6 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
                 # col_count += 1
 
             job_config = bigquery.LoadJobConfig(
-
-                autodetect=True,
                 write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
                 create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED,
                 column_name_character_map="V2",
@@ -2329,9 +2327,6 @@ def import_cur_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq
             cur_data[file].rename(columns=lambda x: x.replace("/", "_"), inplace=True)
 
             job_config = bigquery.LoadJobConfig(
-
-                autodetect=True,
-                skip_leading_rows=1,
                 write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
                 create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED,
                 column_name_character_map="V2",
