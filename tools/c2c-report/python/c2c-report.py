@@ -2048,6 +2048,20 @@ def import_mc_data_sheets(mc_reports_directory, spreadsheet, credentials):
         if file.endswith(".csv"):
             file_fullpath = (mc_reports_directory + "/" + file)
             file_name, _ = file.rsplit(".csv")
+            
+            # Handle fallback mappings if the exact filename is not in config
+            if file_name not in mc_names:
+                if file_name == 'credit-and-refund' and 'adjustment-charges' in mc_names:
+                    if 'adjustment-charges.csv' in mc_file_list:
+                        print(f"Skipping superseded {file}.")
+                        continue
+                    file_name = 'adjustment-charges'
+                elif file_name == 'adjustment-charges' and 'credit-and-refund' in mc_names:
+                    if 'credit-and-refund.csv' in mc_file_list:
+                        print(f"Skipping superseded {file}.")
+                        continue
+                    file_name = 'credit-and-refund'
+
             try:
                 sheet_name = mc_names[file_name]
             except:
@@ -2121,12 +2135,27 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
 
     mc_data = {}
     mc_file_list = []
+    actual_files = {}  # Maps configured file names to actual paths on disk
     # Grabbing a list of files from the provided mc directory
     try:
         print("Importing pricing report files...")
         for file in settings_file["mc_names"].keys():
-            if os.path.isfile(f"{mc_reports_directory}{file}.csv"):
-                mc_file_list.append(f"{file}")
+            primary_path = f"{mc_reports_directory}{file}.csv"
+            
+            # Fallback mapping for old/new filenames
+            fallback_path = None
+            if file == 'adjustment-charges':
+                fallback_path = f"{mc_reports_directory}credit-and-refund.csv"
+            elif file == 'credit-and-refund':
+                fallback_path = f"{mc_reports_directory}adjustment-charges.csv"
+
+            if os.path.isfile(primary_path):
+                mc_file_list.append(file)
+                actual_files[file] = primary_path
+            elif fallback_path and os.path.isfile(fallback_path):
+                print(f"File {file}.csv not found, using fallback: {os.path.basename(fallback_path)}")
+                mc_file_list.append(file)
+                actual_files[file] = fallback_path
         # mc_file_list = os.listdir(f"{mc_reports_directory}/*.csv")
     except:
         print("Unable to access directory: " + mc_reports_directory)
@@ -2159,12 +2188,13 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
 
     # Importing all CSV files into a dictionary of dataframes
     for file in mc_file_list:
-        with open(f"{mc_reports_directory}{file}.csv", "rb") as f:
+        file_fullpath = actual_files[file]
+        with open(file_fullpath, "rb") as f:
             num_lines = sum(1 for _ in f)
         if num_lines > 1:
             bq_table_name = (f"{bq_table_prefix}{file.replace('.csv', '')}")
             table_id = (f"{gcp_project_id}.{bq_dataset_name}.{bq_table_name}")
-            print(f"Importing {file}.csv into BQ Table: {table_id}")
+            print(f"Importing {os.path.basename(file_fullpath)} into BQ Table: {table_id}")
             set_gcp_project = f"gcloud config set project {gcp_project_id} >/dev/null 2>&1"
 
             schema = ""
@@ -2178,8 +2208,7 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
             except Exception as e:
                 print(f"error: {e}")
 
-            # if file.endswith(".csv"):
-            file_fullpath = (f"{mc_reports_directory}{file}.csv")
+            # file_fullpath already correctly points to the actual file path
 
             sheet_name = mc_names[file]
             mc_data[file] = pd.read_csv(file_fullpath, low_memory=False)
@@ -2208,7 +2237,7 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
                     "ID": "identity_LineItemIds"
                 }, inplace=True)
 
-            if file == 'credit-and-refund':
+            if file in ('credit-and-refund', 'adjustment-charges'):
                 mc_data[file].rename(columns={
                     "ID": "identity_LineItemIds"
                 }, inplace=True)

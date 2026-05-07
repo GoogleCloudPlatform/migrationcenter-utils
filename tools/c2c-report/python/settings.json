@@ -2,7 +2,7 @@
     "mc_names": {
         "mapped": "GCP Mapped Data (mapped)",
         "unmapped": "AWS Unmapped Data (unmapped)",
-        "credit-and-refund": "AWS Credit & Refunds"
+        "adjustment-charges": "AWS Adjustments & Fees"
     },
     "mc_column_names": {
         "mapped": {
@@ -50,7 +50,7 @@
             "Error": "STRING",
             "ErrorMessage": "STRING"
         },
-        "credit-and-refund": {
+        "adjustment-charges": {
             "identity_LineItemIds": "STRING",
             "lineItem_LineItemType": "STRING",
             "lineItem_ProductCode": "STRING",
@@ -94,7 +94,7 @@
                                                         "type": "NUMBER_GREATER",
                                                         "values": [
                                                             {
-                                                                "userEnteredValue": "0"
+                                                                 "userEnteredValue": "0"
                                                             }
                                                         ]
                                                     }
