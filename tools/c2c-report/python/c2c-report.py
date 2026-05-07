@@ -42,14 +42,7 @@ if username == 'root':
     print("User root not allowed to run this application! Exiting...")
     exit()
 
-# Order to sort worksheets and new names to use
-f = open('settings.json', )
-settings_file = json.load(f)
-mc_names = settings_file["mc_names"]
-mc_column_names = settings_file["mc_column_names"]
-refresh_data_sources_body = settings_file["refresh_data_sources"]
-f.close()
-
+# Global configs will be loaded dynamically inside main() to support fallback logic.
 default_mc_looker_template_id = "421c8150-e7ad-4190-b044-6a18ecdbd391"
 default_cur_looker_template_id = "c4e0ccbc-907a-4bc4-85f1-1711ee47c345"
 
@@ -2208,7 +2201,10 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
                     "ID": "identity_LineItemIds"
                 }, inplace=True)
 
-            if file == 'credit-and-refund':
+            # Support primary key mapping for both new (adjustment-charges) and 
+            # legacy (credit-and-refund) file formats to ensure correct schema 
+            # alignment during BigQuery table loading.
+            if file in ['adjustment-charges', 'credit-and-refund']:
                 mc_data[file].rename(columns={
                     "ID": "identity_LineItemIds"
                 }, inplace=True)
@@ -2422,6 +2418,39 @@ def main():
     sheets_emails = args.e
     do_not_import_data = args.o
     bq_connection_info = args.i
+
+    # Load settings.json dynamically to support fallback logic
+    f = open('settings.json', )
+    settings_file = json.load(f)
+
+    # =========================================================================
+    # BACKWARD COMPATIBILITY RESOLUTION:
+    # Migration Center migrated the default output filename for AWS credits/fees
+    # from 'credit-and-refund.csv' to 'adjustment-charges.csv'.
+    #
+    # To support older exported pricing packages alongside new ones, we check
+    # which file exists on disk. If the old 'credit-and-refund.csv' is found, we
+    # dynamically swap the settings keys in-memory so that all subsequent
+    # dynamic BigQuery table creation, schema lookups, and Google Sheets
+    # connection loops remain intact without table-not-found API failures.
+    # =========================================================================
+    old_file_path = os.path.join(mc_reports_directory, "credit-and-refund.csv")
+    if os.path.isfile(old_file_path):
+        print("Old discounts file format detected. Activating backward compatibility fallback.")
+        if "adjustment-charges" in settings_file["mc_names"]:
+            val = settings_file["mc_names"].pop("adjustment-charges")
+            # Restore legacy sheet name for backward compatibility
+            settings_file["mc_names"]["credit-and-refund"] = "AWS Credit & Refunds"
+
+            col_val = settings_file["mc_column_names"].pop("adjustment-charges")
+            settings_file["mc_column_names"]["credit-and-refund"] = col_val
+
+    # Set configuration variables in local scope
+    global mc_names, mc_column_names, refresh_data_sources_body
+    mc_names = settings_file["mc_names"]
+    mc_column_names = settings_file["mc_column_names"]
+    refresh_data_sources_body = settings_file["refresh_data_sources"]
+    f.close()
 
     if args.r is not None:
         looker_template_id = args.r
