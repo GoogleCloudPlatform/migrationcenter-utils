@@ -2052,12 +2052,12 @@ def import_mc_data_sheets(mc_reports_directory, spreadsheet, credentials):
             # Handle fallback mappings if the exact filename is not in config
             if file_name not in mc_names:
                 if file_name == 'credit-and-refund' and 'adjustment-charges' in mc_names:
-                    if 'adjustment-charges.csv' in mc_file_list:
+                    if os.path.isfile(f"{mc_reports_directory}/adjustment-charges.csv"):
                         print(f"Skipping superseded {file}.")
                         continue
                     file_name = 'adjustment-charges'
                 elif file_name == 'adjustment-charges' and 'credit-and-refund' in mc_names:
-                    if 'credit-and-refund.csv' in mc_file_list:
+                    if os.path.isfile(f"{mc_reports_directory}/credit-and-refund.csv"):
                         print(f"Skipping superseded {file}.")
                         continue
                     file_name = 'credit-and-refund'
