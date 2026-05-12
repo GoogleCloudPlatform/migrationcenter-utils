@@ -2046,18 +2046,18 @@ def import_mc_data_sheets(mc_reports_directory, spreadsheet, credentials):
     # Importing all CSV files into a dictionary of dataframes
     for file in mc_file_list:
         if file.endswith(".csv"):
-            file_fullpath = (mc_reports_directory + "/" + file)
+            file_fullpath = os.path.join(mc_reports_directory, file)
             file_name, _ = file.rsplit(".csv")
             
             # Handle fallback mappings if the exact filename is not in config
             if file_name not in mc_names:
                 if file_name == 'credit-and-refund' and 'adjustment-charges' in mc_names:
-                    if os.path.isfile(f"{mc_reports_directory}/adjustment-charges.csv"):
+                    if os.path.isfile(os.path.join(mc_reports_directory, "adjustment-charges.csv")):
                         print(f"Skipping superseded {file}.")
                         continue
                     file_name = 'adjustment-charges'
                 elif file_name == 'adjustment-charges' and 'credit-and-refund' in mc_names:
-                    if os.path.isfile(f"{mc_reports_directory}/credit-and-refund.csv"):
+                    if os.path.isfile(os.path.join(mc_reports_directory, "credit-and-refund.csv")):
                         print(f"Skipping superseded {file}.")
                         continue
                     file_name = 'credit-and-refund'
@@ -2140,14 +2140,14 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
     try:
         print("Importing pricing report files...")
         for file in settings_file["mc_names"].keys():
-            primary_path = f"{mc_reports_directory}{file}.csv"
+            primary_path = os.path.join(mc_reports_directory, f"{file}.csv")
             
             # Fallback mapping for old/new filenames
             fallback_path = None
             if file == 'adjustment-charges':
-                fallback_path = f"{mc_reports_directory}credit-and-refund.csv"
+                fallback_path = os.path.join(mc_reports_directory, "credit-and-refund.csv")
             elif file == 'credit-and-refund':
-                fallback_path = f"{mc_reports_directory}adjustment-charges.csv"
+                fallback_path = os.path.join(mc_reports_directory, "adjustment-charges.csv")
 
             if os.path.isfile(primary_path):
                 mc_file_list.append(file)
