@@ -12,8 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-on: [push, pull_request]
-paths:
+on:
+  push:
+    paths:
+      - '**'
+      - '!tools/c2c-report/**'
+  pull_request:
+    paths:
       - '**'
       - '!tools/c2c-report/**'
 
