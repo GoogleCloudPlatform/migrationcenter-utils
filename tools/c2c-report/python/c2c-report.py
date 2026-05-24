@@ -34,6 +34,7 @@ import argparse
 import time
 import os
 import json
+from typing import Any
 
 version = "v0.2"
 datetime = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
@@ -52,6 +53,31 @@ f.close()
 
 default_mc_looker_template_id = "421c8150-e7ad-4190-b044-6a18ecdbd391"
 default_cur_looker_template_id = "c4e0ccbc-907a-4bc4-85f1-1711ee47c345"
+
+
+def escape_csv_value(val: Any) -> Any:
+    """Escapes a value for CSV/Sheets to prevent formula injection.
+
+    If the value is a string and starts with a formula triggering character
+    (=, +, -, @, tab, carriage return), prepends a single quote, unless
+    the value is a valid number (to preserve negative/positive numbers).
+    """
+    if not isinstance(val, str):
+        return val
+    if not val:
+        return val
+
+    # If it is a valid number, do not escape it (preserves negative/positive numbers)
+    try:
+        float(val)
+        return val
+    except ValueError:
+        pass
+
+    trigger_chars = ("=", "+", "-", "@", "\t", "\r")
+    if val.startswith(trigger_chars):
+        return "'" + val
+    return val
 
 
 # Check if we should use List Price instead of Actual Cost
@@ -2078,10 +2104,12 @@ def import_mc_data_sheets(mc_reports_directory, spreadsheet, credentials):
             print(f"\t{file}...")
             # print(list(csv.reader(open(file_fullpath))))
             worksheet = sh.add_worksheet(title=sheet_name, rows=100, cols=30)
+            csv_content = list(csv.reader(open(file_fullpath)))
+            sanitized_content = [[escape_csv_value(cell) for cell in row] for row in csv_content]
             sh.values_update(
                 sheet_name,
                 params={'valueInputOption': 'USER_ENTERED'},
-                body={'values': list(csv.reader(open(file_fullpath)))})
+                body={'values': sanitized_content})
 
             response = sh.batch_update(generate_protect_sheet_request(worksheet._properties['sheetId']))
 

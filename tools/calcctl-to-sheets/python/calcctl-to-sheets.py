@@ -8,6 +8,32 @@ import argparse
 import yaml
 from gspread_helper import load_spreadsheet, create_spreadsheet_from_template
 import re
+from typing import Any
+
+def escape_csv_value(val: Any) -> Any:
+    """Escapes a value for CSV/Sheets to prevent formula injection.
+
+    If the value is a string and starts with a formula triggering character
+    (=, +, -, @, tab, carriage return), prepends a single quote, unless
+    the value is a valid number (to preserve negative/positive numbers).
+    """
+    if not isinstance(val, str):
+        return val
+    if not val:
+        return val
+
+    # If it is a valid number, do not escape it (preserves negative/positive numbers)
+    try:
+        float(val)
+        return val
+    except ValueError:
+        pass
+
+    trigger_chars = ("=", "+", "-", "@", "\t", "\r")
+    if val.startswith(trigger_chars):
+        return "'" + val
+    return val
+
 
 calcctl_names = {
     "mapped": "Mapped Data",
@@ -35,6 +61,7 @@ def add_inferred_discounts_to_summary(reports_dir, spreadsheet):
         return
 
     general_discount = inferred_discounts.get('general', 'Could not Infer')
+    general_discount = escape_csv_value(general_discount)
     print(f"General Discount from source files: {general_discount}")
 
     try:
@@ -48,7 +75,7 @@ def add_inferred_discounts_to_summary(reports_dir, spreadsheet):
             print("Adding inferred discounts by product...")
             updates_to_perform.append({'range': 'B15', 'values': [["Inferred Discount per Product"]]})
 
-            product_discounts_data = list(average_by_product.items())
+            product_discounts_data = [(escape_csv_value(k), escape_csv_value(v)) for k, v in average_by_product.items()]
             if product_discounts_data:
                 start_row = 16
                 end_row = start_row + len(product_discounts_data) - 1
@@ -118,8 +145,8 @@ def load_assumptions(reports_dir, spreadsheet):
     current_row = 1
 
     for section, items in assumptions.items():
-        # Add section title
         section_title = section.replace('_', ' ').title()
+        section_title = escape_csv_value(section_title)
         all_values.append([section_title])
         formats_to_apply.append({
             'range': f'A{current_row}',
@@ -169,10 +196,13 @@ def import_calcctl_data(calcctl_reports_directory, sh):
                 sheet_name = calcctl_names[file_name]
                 with open(file_fullpath, 'r', encoding='utf-8') as f_csv:
                     csv_content = list(csv.reader(f_csv))
+                
+                sanitized_content = [[escape_csv_value(cell) for cell in row] for row in csv_content]
+                
                 sh.values_update(
                     sheet_name,
                     params={'valueInputOption': 'USER_ENTERED'},
-                    body={'values': csv_content})
+                    body={'values': sanitized_content})
 
 
 # Parse CLI Arguments
