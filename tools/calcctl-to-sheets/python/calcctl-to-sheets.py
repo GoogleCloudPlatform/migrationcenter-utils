@@ -22,7 +22,8 @@ def escape_csv_value(val: Any) -> Any:
     if not val:
         return val
 
-    # If it is a valid number, do not escape it (preserves negative/positive numbers)
+    # If it is a valid number, do not escape it (preserves negative/positive
+    # numbers).
     try:
         float(val)
         return val
@@ -197,7 +198,10 @@ def import_calcctl_data(calcctl_reports_directory, sh):
                 with open(file_fullpath, 'r', encoding='utf-8') as f_csv:
                     csv_content = list(csv.reader(f_csv))
                 
-                sanitized_content = [[escape_csv_value(cell) for cell in row] for row in csv_content]
+                sanitized_content = [
+                    [escape_csv_value(cell) for cell in row]
+                    for row in csv_content
+                ]
                 
                 sh.values_update(
                     sheet_name,

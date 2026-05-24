@@ -67,7 +67,8 @@ def escape_csv_value(val: Any) -> Any:
     if not val:
         return val
 
-    # If it is a valid number, do not escape it (preserves negative/positive numbers)
+    # If it is a valid number, do not escape it (preserves negative/positive
+    # numbers).
     try:
         float(val)
         return val
@@ -2105,7 +2106,9 @@ def import_mc_data_sheets(mc_reports_directory, spreadsheet, credentials):
             # print(list(csv.reader(open(file_fullpath))))
             worksheet = sh.add_worksheet(title=sheet_name, rows=100, cols=30)
             csv_content = list(csv.reader(open(file_fullpath)))
-            sanitized_content = [[escape_csv_value(cell) for cell in row] for row in csv_content]
+            sanitized_content = [
+                [escape_csv_value(cell) for cell in row] for row in csv_content
+            ]
             sh.values_update(
                 sheet_name,
                 params={'valueInputOption': 'USER_ENTERED'},
