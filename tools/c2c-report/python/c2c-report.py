@@ -2167,7 +2167,7 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
         exit()
 
     # Create BQ dataset
-    client = bigquery.Client()
+    client = bigquery.Client(project=gcp_project_id)
     dataset_id = f"{gcp_project_id}.{bq_dataset_name}"
 
     # Construct a full Dataset object to send to the API.
@@ -2195,7 +2195,6 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
             bq_table_name = (f"{bq_table_prefix}{file.replace('.csv', '')}")
             table_id = (f"{gcp_project_id}.{bq_dataset_name}.{bq_table_name}")
             print(f"Importing {os.path.basename(file_fullpath)} into BQ Table: {table_id}")
-            set_gcp_project = f"gcloud config set project {gcp_project_id} >/dev/null 2>&1"
 
             schema = ""
             for column in mc_column_names[file].keys():
@@ -2203,10 +2202,6 @@ def import_mc_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq_
 
             # Remove last comma
             schema = schema[:-1]
-            try:
-                os.system(set_gcp_project)
-            except Exception as e:
-                print(f"error: {e}")
 
             # file_fullpath already correctly points to the actual file path
 
@@ -2303,7 +2298,7 @@ def import_cur_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq
                      os.path.isfile(os.path.join(mc_reports_directory, f))]
 
     # Create BQ dataset
-    client = bigquery.Client()
+    client = bigquery.Client(project=gcp_project_id)
     dataset_id = f"{gcp_project_id}.{bq_dataset_name}"
 
     # Construct a full Dataset object to send to the API.
@@ -2333,7 +2328,6 @@ def import_cur_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq
             num_lines = sum(1 for _ in f)
         if num_lines > 1:
             print(f"Importing {file} into BQ Table: {table_id}")
-            set_gcp_project = f"gcloud config set project {gcp_project_id} >/dev/null 2>&1"
 
             # schema = ""
             # for column in mc_column_names[file].keys():
@@ -2341,10 +2335,7 @@ def import_cur_into_bq(mc_reports_directory, gcp_project_id, bq_dataset_name, bq
             #
             # # Remove last comma
             # schema = schema[:-1]
-            try:
-                os.system(set_gcp_project)
-            except Exception as e:
-                print(f"error: {e}")
+
 
             # if file.endswith(".csv"):
             file_fullpath = (f"{mc_reports_directory}{file}")
