@@ -1,5 +1,9 @@
 # MConnect
 
+> [!WARNING]
+> **MConnect is deprecated and no longer supported.**
+> This tool is no longer actively maintained. For application discovery and assessment, please use Google Cloud Migration Center directly.
+
 A command line interface used to export and merge information from Migration Center and CAST to BigQuery, which allows you to perform data analysis in Looker Studio.
 
 ## Before you begin
