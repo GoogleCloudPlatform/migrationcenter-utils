@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.3.1
 	golang.org/x/sync v0.3.0
 	google.golang.org/api v0.128.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
