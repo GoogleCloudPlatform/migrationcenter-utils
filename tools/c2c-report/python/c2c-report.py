@@ -1037,12 +1037,12 @@ def generate_mc_sheets(spreadsheet, worksheet_names, data_source_type, data_sour
         {
             'range': "K2:K4",
             'values': [
-                ["GCP Services Total"], ["GCP Services Discounted Total"], ["GCP Services Total w/ Discounts"]],
+                ["GCP Services Total"], ["GCP Total Discount Savings"], ["GCP Services Total w/ Discounts"]],
         },
         {
             'range': "L2:L4",
             'values': [
-                ["=SUM(F3:F)"], ["=(SUM(F3:F) - SUM(H3:H))"], ["=SUM(H3:H) + SUM(D3:D)"]],
+                ["=SUM(F3:F)"], ["=(SUM(F3:F) - SUM(I3:I))"], ["=SUM(H3:H) + SUM(D3:D)"]],
         }
 
     ], value_input_option="USER_ENTERED"
